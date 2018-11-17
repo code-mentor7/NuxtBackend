@@ -1,0 +1,12 @@
+{
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    {
+      "language": "vue",
+      "autoFix": false
+    }
+  ],
+  "eslint.provideLintTask": true,
+  "eslint.alwaysShowStatus": true,
+}
