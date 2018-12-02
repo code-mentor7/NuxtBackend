@@ -23,6 +23,7 @@
 <script>
 // import vueniverseLogo from '~/assets/img/vueniverse_logo.svg'
 export default {
+  auth: false,
   async asyncData ({ app }) {
     const hey = await app.$axios.$get("/api")
     return { hey }
