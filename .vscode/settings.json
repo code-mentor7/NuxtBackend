@@ -9,4 +9,5 @@
   ],
   "eslint.provideLintTask": true,
   "eslint.alwaysShowStatus": true,
+  "eslint.autoFixOnSave": true,
 }
