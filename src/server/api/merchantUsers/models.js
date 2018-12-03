@@ -1,7 +1,9 @@
 import mongoose from "mongoose"
 import bcrypt from "bcryptjs"
 import { ServerError } from "express-server-error"
-// import Merchants from "../merchants/models"
+import MerchantRoles from "../merchantRoles/models"
+import Merchants from "../merchants/models"
+
 // import Products from "../products/models"
 
 // TODO: Customer Roles
@@ -42,6 +44,16 @@ const merchantUsersSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  dark_theme: {
+    type: Boolean,
+    default: false
+  },
+  roles: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "merchant_roles"
+    }
+  ],
   reset_password_attempt: {
     type: Number,
     default: 0
@@ -73,15 +85,16 @@ const merchantUsersSchema = new mongoose.Schema({
 })
 
 merchantUsersSchema.pre("findOne", function () {
-  // this.populate({
-  //   path: "cart.merchant_id",
-  //   model: Merchants,
-  //   select: "name _id"
-  // })
-  // this.populate({
-  //   path: "cart.product_id",
-  //   model: Products,
-  //   select: "adult_selling_price adult_promotion_price kid_selling_price kid_promotion_price name slug primary_image_id merchant_id sku adult_travel_insurance_fee child_travel_insurance_fee handling_fee adult_purchase_discount child_purchase_discount _id" })
+  this.populate({
+    path: "merchant_id",
+    model: Merchants,
+    select: "name _id"
+  })
+  this.populate({
+    path: "roles",
+    model: MerchantRoles,
+    select: "name _id privileges"
+  })
 })
 
 merchantUsersSchema.pre("save", async function (next) {

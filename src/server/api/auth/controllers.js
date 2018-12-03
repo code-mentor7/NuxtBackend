@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
-import Customer from "../users/models"
+import MerchantUsers from "../merchantUsers/models"
 import randString from "~/util/randString"
 import { ServerError } from "express-server-error"
 import { pick as _pick, omit as _omit } from "lodash"
@@ -10,7 +10,7 @@ export const login = {
   async post (req, res) {
     try {
       let { email, password } = req.body
-      let user = await Customer.findOne({ email })
+      let user = await MerchantUsers.findOne({ email })
       if (!user) throw new ServerError("Authentication failed. Incorrect email or password", { status: 401, log: false })
       let passwordHash = user.password
       let matched = await bcrypt.compare(password, passwordHash)
@@ -36,7 +36,7 @@ export const login = {
 export const user = {
   async get (req, res) {
     let freshUser = req.user
-    let user = await Customer.findOne({ _id: req.user._id })
+    let user = await MerchantUsers.findOne({ _id: req.user._id })
     if (user) freshUser = _omit(user.toObject(), ["password", "verification_token", "reset_password_token", "__v", "jti", "iat", "exp"])
     req.user = freshUser
 
@@ -54,7 +54,7 @@ export const check = {
   async post (req, res) {
     try {
       if (req.body.email) {
-        let cust = await Customer.find({ email: req.body.email })
+        let cust = await MerchantUsers.find({ email: req.body.email })
         if (cust.length === 0) res.json({ exists: false })
         else throw new ServerError("Email exists", { status: 401, log: false })
       }
@@ -75,7 +75,7 @@ export const resendVE = {
       if (!email) {
         throw new ServerError("Email is required.", { status: 400 })
       }
-      let cust = await Customer.findOne({ email })
+      let cust = await MerchantUsers.findOne({ email })
       if (!cust) throw new ServerError("Email not found.", { status: 400 })
 
       if (cust.account_verified === true) {
@@ -114,7 +114,7 @@ export const resetPass = {
         throw new ServerError("Password required.", { status: 400 })
       }
       let decodedData = jwt.verify(req.body.i, process.env.SECRET)
-      let cust = await Customer.findOne({ email: decodedData.email })
+      let cust = await MerchantUsers.findOne({ email: decodedData.email })
 
       if (!cust) throw new ServerError("Email not found.", { status: 400 })
       cust.reset_password_token = ""
@@ -137,7 +137,7 @@ export const forgotPass = {
       if (!email) {
         throw new ServerError("Email is required.", { status: 400 })
       }
-      let cust = await Customer.findOne({ email })
+      let cust = await MerchantUsers.findOne({ email })
       if (!cust) throw new ServerError("Email not found.", { status: 400 })
 
       if (cust.account_verified === false) {
@@ -181,7 +181,7 @@ export const forgotPass = {
 export const signup = {
   async post (req, res) {
     try {
-      const allowedSchema = _pick(req.body, getSchemaKeys(Customer))
+      const allowedSchema = _pick(req.body, getSchemaKeys(MerchantUsers))
       const signature = {
         email: allowedSchema.email,
         contact_number: allowedSchema.contact_number,
@@ -197,7 +197,7 @@ export const signup = {
       // TODO: right now meteor relying on user id unique, need to change index to email
       // let newCustomer = new Customer(allowedSchema)
       // await newCustomer.save()
-      await Customer.create(allowedSchema)
+      await MerchantUsers.create(allowedSchema)
       const verificationLink = `${req.protocol}://${req.get("host")}/verify?i=${allowedSchema.verification_token}`
       const emailHTML = generateEmailHTMLButtonTemplate(
         verificationLink,

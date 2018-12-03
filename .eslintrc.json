@@ -17,6 +17,7 @@
     "sourceType": "module"
   },
   "rules": {
+    "brace-style": ["error", "stroustrup"],
     "max-len": [1, 120, 2, {"ignoreComments": true}],
     "quote-props": [1, "consistent-as-needed"],
     "no-cond-assign": [2, "except-parens"],
@@ -26,7 +27,8 @@
     "default-case": 1,
     "no-else-return": 0,
     "no-param-reassign": 0,
-    "quotes": [2, "double", { "allowTemplateLiterals": true }]
+    "quotes": [2, "double", { "allowTemplateLiterals": true }],
+    "prefer-promise-reject-errors": 0
   },
   "globals": {}
 }
