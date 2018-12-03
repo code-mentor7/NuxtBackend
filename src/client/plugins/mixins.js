@@ -113,7 +113,6 @@ const commonFunction = {
 
 Vue.use(commonFunction)
 
-
 export default (context, inject) => {
   // inside into nuxt context (ssr)
   inject("commonFunction", mixins.methods)

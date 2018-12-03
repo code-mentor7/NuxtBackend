@@ -2,7 +2,7 @@
 // import cookieParser from "cookie-parser"
 // import cors from 'cors'
 import express from "express"
-import setupMiddware from './middleware'
+import setupMiddware from "./middleware"
 import mongoose from "mongoose"
 import { Nuxt, Builder } from "nuxt"
 
@@ -43,7 +43,9 @@ mongoose.connect(process.env.DB_URL, { useNewUrlParser: true })
   })
 
 app.listen(process.env.PORT, process.env.HOST, err => {
-  if (err) { console.log(err) }
+  if (err) {
+    console.log(err)
+  }
   console.log(`Server listening on http://${process.env.HOST}:${process.env.PORT}`)
 })
 
