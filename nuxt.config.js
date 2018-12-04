@@ -11,12 +11,20 @@ const BASE_URL = process.env.API_URL || `http://${HOST}:${PORT}/`
 
 module.exports = {
   auth: {
+    cookie: {
+      prefix: "96Cauth."
+    },
+    localStorage: {
+      prefix: "96Cauth."
+    },
+    plugins: [ "~/plugins/access.js" ],
     redirect: {
       login: "/signin",
       logout: "/signin",
       callback: "/signin",
       home: "/"
     },
+    resetOnError: true,
     strategies: {
       local: {
         endpoints: {
@@ -25,6 +33,9 @@ module.exports = {
           user: { url: "/api/auth/user", method: "get", propertyName: "user" }
         }
       }
+    },
+    token: {
+      prefix: "_96Ctoken."
     }
   },
   axios: {

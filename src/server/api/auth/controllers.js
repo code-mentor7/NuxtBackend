@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
+import MerchantRoles from "../merchantRoles/models"
 import MerchantUsers from "../merchantUsers/models"
 import randString from "~/util/randString"
 import { ServerError } from "express-server-error"
@@ -41,7 +42,7 @@ export const user = {
       freshUser = _omit(user.toObject(), ["password", "verification_token", "reset_password_token", "__v", "jti", "iat", "exp"])
       if (user.roles["super-admin-96"]) freshUser.iamawesome = true
     }
-    // req.user = freshUser
+    req.user = { ...freshUser }
 
     res.json({ user: freshUser })
   }
@@ -185,9 +186,12 @@ export const signup = {
   async post (req, res) {
     try {
       const allowedSchema = _pick(req.body, getSchemaKeys(MerchantUsers))
-      const signature = {
-        email: allowedSchema.email,
+      // TODO: remove hardcoded merchant id
+      allowedSchema.merchant_id = "5a886f9a356447c1eccb4344"
+      let signature = {
         contact_number: allowedSchema.contact_number,
+        email: allowedSchema.email,
+        merchant_id: allowedSchema.merchant_id,
         type: "verify"
       }
 
@@ -200,6 +204,8 @@ export const signup = {
       // TODO: right now meteor relying on user id unique, need to change index to email
       // let newCustomer = new Customer(allowedSchema)
       // await newCustomer.save()
+      const userRole = await MerchantRoles.findOne({ name: "admin" })
+      allowedSchema.roles = [userRole._id]
       await MerchantUsers.create(allowedSchema)
       const verificationLink = `${req.protocol}://${req.get("host")}/verify?i=${allowedSchema.verification_token}`
       const emailHTML = generateEmailHTMLButtonTemplate(

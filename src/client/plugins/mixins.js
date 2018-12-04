@@ -108,9 +108,13 @@ const mixins = {
       return false
     },
     userIsAdmin () {
-      console.log("### this.$auth.user.iamawesome", this.$auth.user)
+      console.log("### this.$auth.user.userIsAdmin", this.$auth.user)
       if (!this.$auth.user) return false
       if (!this.$auth.user.roles) return false
+
+      const filteredRole = _.filter(this.$auth.user.roles, { name: "admin" })
+      if (filteredRole.length > 0) return true
+
       // if (this.$auth.roles.admin) return true
       return false
     }
