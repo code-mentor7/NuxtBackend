@@ -13,7 +13,7 @@ module.exports = {
   auth: {
     redirect: {
       login: "/signin",
-      logout: "/",
+      logout: "/signin",
       callback: "/signin",
       home: "/"
     },

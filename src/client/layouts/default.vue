@@ -1,6 +1,7 @@
 <template>
-  <v-app id="inspire">
-    <top-nav />
+  <v-app :dark="isDarkTheme">
+    <confirm-action-dialog ref="confirm"/>
+    <top-nav v-if="user" />
     <v-content app>
       <snackbar />
       <nuxt/>
@@ -10,61 +11,37 @@
 </template>
 
 <script>
+import { mapState } from "vuex"
 
 import BottomFooter from "~/components/BottomFooter.vue"
+import ConfirmActionDialog from "~/components/Dialog/ConfirmActionDialog.vue"
 import Snackbar from "~/components/Snackbar.vue"
 import TopNav from "~/components/TopNav.vue"
 
 export default {
   components: {
     BottomFooter,
+    ConfirmActionDialog,
     Snackbar,
     TopNav
   },
-  props: {
-    source: String
-  },
-  data () {
-    return {
-      drawer: null,
-      items: [
-        {
-          action: "android",
-          title: "Something",
-          items: [
-            { title: "First" },
-            { title: "Second" },
-            { title: "Third" }
-          ]
-        },
-        {
-          action: "settings",
-          title: "Settings",
-          items: [
-            { title: "Payment" },
-            { title: "Account" },
-            { title: "Privacy" }
-          ]
-        }
-      ],
-      name: "vueniverse",
-      mini: true,
-      right: null
-    }
-  },
   computed: {
-    snackbar: {
-      get () {
-        return this.$store.state.notification.snackbar
-      },
-      set (value) {
-        this.$store.commit("notification/UPDATE_SNACKBAR", value)
-      }
-    },
-    snackbarColor () {
-      return "red"
-      // return this.$store.state.notification.context
+    ...mapState({
+      user: state => state.auth.user
+    }),
+    isDarkTheme () {
+      if (this.user) return this.user.dark_theme
+      return true
     }
+  },
+  mounted () {
+    this.$root.$confirm = this.$refs.confirm.open
   }
+
 }
 </script>
+<style>
+.blue-gradient {
+  background: linear-gradient(to right, #2a9afc 0%, #00cbfe 100%);
+}
+</style>

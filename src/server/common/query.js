@@ -1,4 +1,4 @@
-import { merge } from "lodash"
+import { merge, pick } from "lodash"
 import { ServerError } from "express-server-error"
 
 export const controllers = {
@@ -144,17 +144,18 @@ export const updateOne = (model) => async (req, res, next) => {
     .catch(error => next(error))
 }
 
-export const updateOneById = (model) => async (req, res, next) => {
+export const updateOneById = (model, allowedSchema) => async (req, res, next) => {
   if (!req.params.id) throw new ServerError("Id not found.", { status: 400 })
-  let findQuery = { _id: req.params.id }
-  let updateQuery = { $set: { ...req.body } }
+  const dataToBeUpdated = pick(req.body, allowedSchema)
+  const findQuery = { _id: req.params.id }
+  const updateQuery = { $set: { ...dataToBeUpdated } }
 
   return controllers.updateOneById(model, findQuery, updateQuery)
     .then(doc => res.status(201).json(doc))
     .catch(error => next(error))
 }
 
-export const generateControllers = (model, overrides = {}) => {
+export const generateControllers = (model, allowedSchema = [], overrides = {}) => {
   const defaults = {
     createOne: createOne(model),
     deleteOne: deleteOne(model),
@@ -165,7 +166,7 @@ export const generateControllers = (model, overrides = {}) => {
     textSearch: textSearch(model),
     textSearchCount: textSearchCount(model),
     updateOne: updateOne(model),
-    updateOneById: updateOneById(model)
+    updateOneById: updateOneById(model, allowedSchema)
   }
 
   return { ...defaults, ...overrides }

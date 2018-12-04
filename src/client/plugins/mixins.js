@@ -101,6 +101,18 @@ const mixins = {
           delete obj[key]
         }
       })
+    },
+    userIsAwesome () {
+      if (!this.$auth.user) return false
+      if (this.$auth.user.iamawesome) return true
+      return false
+    },
+    userIsAdmin () {
+      console.log("### this.$auth.user.iamawesome", this.$auth.user)
+      if (!this.$auth.user) return false
+      if (!this.$auth.user.roles) return false
+      // if (this.$auth.roles.admin) return true
+      return false
     }
   }
 }

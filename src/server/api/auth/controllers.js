@@ -35,10 +35,13 @@ export const login = {
 
 export const user = {
   async get (req, res) {
-    let freshUser = req.user
+    let freshUser = {}
     let user = await MerchantUsers.findOne({ _id: req.user._id })
-    if (user) freshUser = _omit(user.toObject(), ["password", "verification_token", "reset_password_token", "__v", "jti", "iat", "exp"])
-    req.user = freshUser
+    if (user) {
+      freshUser = _omit(user.toObject(), ["password", "verification_token", "reset_password_token", "__v", "jti", "iat", "exp"])
+      if (user.roles["super-admin-96"]) freshUser.iamawesome = true
+    }
+    // req.user = freshUser
 
     res.json({ user: freshUser })
   }
@@ -98,7 +101,7 @@ export const resendVE = {
         "Verify your email to complete your signup",
         "Click Me"
       )
-      await sendEmail(cust.email, "[96travel] Verify Your Signup", emailHTML)
+      await sendEmail(cust.email, "[96travel Center] Verify Your Signup", emailHTML)
       res.json({ status: "OK" })
     }
     catch (err) {
@@ -169,7 +172,7 @@ export const forgotPass = {
         "Click the button to reset your password",
         "Click Me"
       )
-      await sendEmail(cust.email, "[96travel] Reset Password", emailHTML)
+      await sendEmail(cust.email, "[96travel Center] Reset Password", emailHTML)
       res.json({ status: "OK" })
     }
     catch (err) {
@@ -205,7 +208,7 @@ export const signup = {
         "Verify your email to complete your signup",
         "Click Me"
       )
-      await sendEmail(allowedSchema.email, "[96travel] Verify Your Signup", emailHTML)
+      await sendEmail(allowedSchema.email, "[96travel Center] Verify Your Signup", emailHTML)
       res.json({ status: "OK" })
     }
     catch (error) {

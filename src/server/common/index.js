@@ -32,7 +32,7 @@ export const getSchemaKeys = (model, keysToOmit = ["_id", "id", "created_at", "u
   )
 }
 
-export const sendEmail = async (mailTo, mailSubject, mailBody, mailFrom = "96travel <support@96travel.com>") => {
+export const sendEmail = async (mailTo, mailSubject, mailBody, mailFrom = "96travel Center <support@96travel.com>") => {
   if (!mailTo || !mailSubject || !mailBody || !process.env.MAILER_URL) {
     console.warn("Mail to, Mail subject Mail Body/HTML and Mailer URL (config) is required.")
     return Promise.reject()
