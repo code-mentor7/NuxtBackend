@@ -5,7 +5,8 @@ import MerchantUsers from "../merchantUsers/models"
 import randString from "~/util/randString"
 import { ServerError } from "express-server-error"
 import { pick as _pick, omit as _omit } from "lodash"
-import { generateEmailHTMLButtonTemplate, generateToken, getSchemaKeys, sendEmail } from "../../common"
+import COMMON from "../../common"
+import Roles from "../../common/roles"
 
 export const login = {
   async post (req, res) {
@@ -39,8 +40,8 @@ export const user = {
     let freshUser = {}
     let user = await MerchantUsers.findOne({ _id: req.user._id })
     if (user) {
-      freshUser = _omit(user.toObject(), ["password", "verification_token", "reset_password_token", "__v", "jti", "iat", "exp"])
-      if (user.roles["super-admin-96"]) freshUser.iamawesome = true
+      freshUser = _omit(user.toObject(), ["password", "verification_token", "reset_password_token", "__v", "jti", "iat", "exp", "roles"])
+      if (Roles.isSuperAdmin(user.roles)) freshUser.iamawesome = true
     }
     req.user = { ...freshUser }
 
@@ -92,17 +93,17 @@ export const resendVE = {
         type: "verify"
       }
 
-      cust.verification_token = generateToken(signature)
+      cust.verification_token = COMMON.generateToken(signature)
 
       await cust.save()
       const verificationLink = `${req.protocol}://${req.get("host")}/verify?i=${cust.verification_token}`
-      const emailHTML = generateEmailHTMLButtonTemplate(
+      const emailHTML = COMMON.generateEmailHTMLButtonTemplate(
         verificationLink,
         "Email Verification",
         "Verify your email to complete your signup",
         "Click Me"
       )
-      await sendEmail(cust.email, "[96travel Center] Verify Your Signup", emailHTML)
+      await COMMON.sendEmail(cust.email, "[96travel Center] Verify Your Signup", emailHTML)
       res.json({ status: "OK" })
     }
     catch (err) {
@@ -161,19 +162,19 @@ export const forgotPass = {
         type: "reset"
       }
 
-      cust.reset_password_token = generateToken(signature)
+      cust.reset_password_token = COMMON.generateToken(signature)
       cust.reset_password_attempt += 1
       cust.reset_password_attempt_at = new Date()
 
       await cust.save()
       const resetLink = `${req.protocol}://${req.get("host")}/reset-password?i=${cust.reset_password_token}`
-      const emailHTML = generateEmailHTMLButtonTemplate(
+      const emailHTML = COMMON.generateEmailHTMLButtonTemplate(
         resetLink,
         "Reset Password",
         "Click the button to reset your password",
         "Click Me"
       )
-      await sendEmail(cust.email, "[96travel Center] Reset Password", emailHTML)
+      await COMMON.sendEmail(cust.email, "[96travel Center] Reset Password", emailHTML)
       res.json({ status: "OK" })
     }
     catch (err) {
@@ -185,7 +186,7 @@ export const forgotPass = {
 export const signup = {
   async post (req, res) {
     try {
-      const allowedSchema = _pick(req.body, getSchemaKeys(MerchantUsers))
+      const allowedSchema = _pick(req.body, COMMON.getSchemaKeys(MerchantUsers))
       // TODO: remove hardcoded merchant id
       allowedSchema.merchant_id = "5a886f9a356447c1eccb4344"
       let signature = {
@@ -195,7 +196,7 @@ export const signup = {
         type: "verify"
       }
 
-      allowedSchema.verification_token = generateToken(signature)
+      allowedSchema.verification_token = COMMON.generateToken(signature)
       // unique is an index configuration option in your schema.
       // If your 'users' collection doesn't have a unique index on userName,
       // you need to wait for the index to build before you start relying on it.
@@ -208,13 +209,13 @@ export const signup = {
       allowedSchema.roles = [userRole._id]
       await MerchantUsers.create(allowedSchema)
       const verificationLink = `${req.protocol}://${req.get("host")}/verify?i=${allowedSchema.verification_token}`
-      const emailHTML = generateEmailHTMLButtonTemplate(
+      const emailHTML = COMMON.generateEmailHTMLButtonTemplate(
         verificationLink,
         "Email Verification",
         "Verify your email to complete your signup",
         "Click Me"
       )
-      await sendEmail(allowedSchema.email, "[96travel Center] Verify Your Signup", emailHTML)
+      await COMMON.sendEmail(allowedSchema.email, "[96travel Center] Verify Your Signup", emailHTML)
       res.json({ status: "OK" })
     }
     catch (error) {

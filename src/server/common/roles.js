@@ -1,3 +1,4 @@
+import { filter } from "lodash"
 
 export const isAllowedAccess = (roles = [], privileges = [], user) => {
   if (!user.roles) return false
@@ -25,4 +26,8 @@ export const isAllowedAccess = (roles = [], privileges = [], user) => {
     }
   }
   return allow
+}
+
+export const isSuperAdmin = (roles = []) => {
+  return filter(roles, { name: "super-admin-96" }).length > 0
 }

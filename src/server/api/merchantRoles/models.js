@@ -9,7 +9,31 @@ const merchantRolesSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "merchants"
   },
-  privileges: [String]
+  resources: [
+    {
+      name: {
+        type: String,
+        require: true
+      },
+      action: [
+        {
+          name: {
+            type: String,
+            require: true
+          },
+          access_type: {
+            type: String,
+            require: true,
+            default: "own"
+          },
+          fields: {
+            allow: [String],
+            deny: [String]
+          }
+        }
+      ]
+    }
+  ]
 }, {
   timestamps: {
     createdAt: "created_at",
