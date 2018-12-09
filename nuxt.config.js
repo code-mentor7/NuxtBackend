@@ -17,7 +17,7 @@ module.exports = {
     localStorage: {
       prefix: "96Cauth."
     },
-    plugins: [ "~/plugins/access.js" ],
+    // plugins: [ "~/plugins/access.js" ],
     redirect: {
       login: "/signin",
       logout: "/signin",

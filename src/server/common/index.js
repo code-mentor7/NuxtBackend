@@ -24,7 +24,7 @@ export const generateToken = (signature, expiresIn = "24h", secret) => {
 }
 
 export const getSchemaKeys = (model, keysToOmit = ["_id", "id", "created_at", "updated_at"]) => {
-  if (keysToOmit && keysToOmit.constructor !== Array) {
+  if (keysToOmit && !Array.isArray(keysToOmit)) {
     return console.warn("Keys to omit must be in array.")
   }
   return Object.keys(

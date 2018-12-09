@@ -44,4 +44,17 @@ export default {
 .blue-gradient {
   background: linear-gradient(to right, #2a9afc 0%, #00cbfe 100%);
 }
+
+.fab-container {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}
+/* remove spindown buttons in number type inputs */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
 </style>

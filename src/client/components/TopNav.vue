@@ -10,7 +10,7 @@
     >
       <v-list dense>
         <v-list-tile
-          :to="{name:'home'}"
+          :to="{name: `index___${$i18n.locale}`}"
           exact>
           <v-list-tile-action>
             <v-icon>dashboard</v-icon>
@@ -35,13 +35,13 @@
           <v-list-tile slot="activator">
             <v-list-tile-title>96Travel CMS</v-list-tile-title>
           </v-list-tile>
-          <v-list-tile :to="{name:'companyDetails'}">
+          <v-list-tile :to="{name: `company-details___${$i18n.locale}`}">
             <v-list-tile-action>
               <v-icon>business</v-icon>
             </v-list-tile-action>
             <v-list-tile-title >Company Details</v-list-tile-title>
           </v-list-tile>
-          <v-list-tile :to="{name:'landingPage'}">
+          <v-list-tile :to="{name: `landing-page___${$i18n.locale}`}">
             <v-list-tile-action>
               <v-icon>view_quilt</v-icon>
             </v-list-tile-action>

@@ -4,6 +4,7 @@ import authRoutes from "./auth/routes"
 import landingPageRoutes from "./landingPage/routes"
 import merchantUserRoutes from "./merchantUsers/routes"
 import productsRoutes from "./products/routes"
+import merchantRolesRoutes from "./merchantRoles/routes"
 import siteIdentityRoutes from "./siteIdentity/routes"
 import transactionsRoutes from "./transactions/routes"
 // import listEndpoints from "express-list-endpoints"
@@ -18,6 +19,7 @@ router.use("/users", merchantUserRoutes)
 // router.use("/hotels", hotelRoutes)
 router.use("/landing-page", landingPageRoutes)
 router.use("/products", productsRoutes)
+router.use("/roles", merchantRolesRoutes)
 router.use("/site-identity", siteIdentityRoutes)
 router.use("/transactions", transactionsRoutes)
 

@@ -46,7 +46,7 @@ const merchantUsersSchema = new mongoose.Schema({
   },
   dark_theme: {
     type: Boolean,
-    default: false
+    default: true
   },
   roles: [
     {

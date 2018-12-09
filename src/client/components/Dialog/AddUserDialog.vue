@@ -1,5 +1,6 @@
 <template>
   <v-dialog
+    :fullscreen="$vuetify.breakpoint.mdAndDown"
     v-model="isShow"
     scrollable
     max-width="700px"
@@ -69,10 +70,38 @@
                 :error-messages="checkError('roles', validationProps, $v, 'User Role')"
                 v-model="roles"
                 :items="userRoles"
+                item-text="name"
+                item-value="_id"
+                placeholder="Select user's role"
                 hide-selected
                 chips
                 label="User Roles"
-              />
+              >
+                <template
+                  slot="item"
+                  slot-scope="data"
+                >
+                  {{ data.item.name | capitalize }}
+                </template>
+                <template
+                  slot="selection"
+                  slot-scope="data"
+                >
+                  <v-chip
+                    :selected="data.selected"
+                    :disabled="data.disabled"
+                    :key="JSON.stringify(data.item)"
+                    class="v-chip--select-multi"
+                    @input="data.parent.selectItem(data.item)"
+                  >
+                    <v-avatar
+                      class="accent white--text"
+                      v-text="data.item.name.slice(0, 1).toUpperCase()"
+                    />
+                    {{ data.item.name | capitalize }}
+                  </v-chip>
+                </template>
+              </v-combobox>
             </v-flex>
           </v-layout>
         </v-container>
@@ -80,7 +109,7 @@
       <v-card-actions>
         <v-spacer/>
         <v-btn
-          :loading="isLoading"
+          :loading="submitted"
           color="primary"
           flat
           @click.native="save()">Submit</v-btn>
@@ -97,6 +126,7 @@
 import { validationMixin } from "vuelidate"
 import {
   required,
+  minLength,
   email,
   sameAs
 } from "vuelidate/lib/validators"
@@ -118,7 +148,7 @@ export default {
       emailVerified: false,
       emailVerifiedMessage: [],
       isEmailExist: [],
-      isLoading: false,
+      submitted: false,
       message: "",
       messageType: "error",
       mobile_number: null,
@@ -127,8 +157,8 @@ export default {
       showPassword: false,
       showConfirmPassword: false,
       userRoles: [
-        { text: "Admin", value: "admin" },
-        { text: "Product Manager", value: "product_manager" }
+        // { text: "Admin", value: "admin" },
+        // { text: "Product Manager", value: "product_manager" }
       ],
       validationProps: {
         confirm_password: {
@@ -141,7 +171,8 @@ export default {
         },
         mobile_number: {},
         password: {
-          required
+          required,
+          minLength: minLength(5)
         },
         roles: { required }
       }
@@ -165,6 +196,15 @@ export default {
           this.close()
         }
       }
+    }
+  },
+  created () {
+    if (this.userIsAdmin()) {
+      this.$axios.$get("/api/roles")
+        .then((res) => {
+          this.userRoles = res
+        })
+        .catch()
     }
   },
   mounted: function () {
@@ -197,15 +237,15 @@ export default {
           password: this.password,
           email: this.email,
           contact_number: this.mobile_number,
-          roles: this.roles
+          roles: this.roles._id
         }
         this.removeEmptyObjectVariable(attr) // Remove empty value prior to create
-        let msg = "Account created. We have sent you an email for verification."
+        let msg = `Account created. We have sent ${name} an email for verification.`
         let type = "success"
         this.$axios.$post("/api/auth/signup", attr)
           .then((response) => {
             this.submitted = false
-            this.$nuxt.$router.push("/")
+            // this.$nuxt.$router.push("/")
             this.$store.dispatch("setupSnackbar", {
               show: true,
               text: msg,
@@ -216,7 +256,7 @@ export default {
             this.submitted = false
             this.$v.$reset()
             type = "error"
-            msg = "We are unable to sign you up at this moment."
+            msg = "We are unable to add user at this moment."
             this.$store.dispatch("setupSnackbar", {
               show: true,
               text: msg,

@@ -1,59 +1,13 @@
 import bcrypt from "bcryptjs"
+import { ServerError } from "express-server-error"
 import jwt from "jsonwebtoken"
+import { pick as _pick, omit as _omit } from "lodash"
+
+import * as COMMON from "../../common"
 import MerchantRoles from "../merchantRoles/models"
 import MerchantUsers from "../merchantUsers/models"
 import randString from "~/util/randString"
-import { ServerError } from "express-server-error"
-import { pick as _pick, omit as _omit } from "lodash"
-import COMMON from "../../common"
-import Roles from "../../common/roles"
-
-export const login = {
-  async post (req, res) {
-    try {
-      let { email, password } = req.body
-      let user = await MerchantUsers.findOne({ email })
-      if (!user) throw new ServerError("Authentication failed. Incorrect email or password", { status: 401, log: false })
-      let passwordHash = user.password
-      let matched = await bcrypt.compare(password, passwordHash)
-      if (!user || !matched || !email || !password) {
-        throw new ServerError("Authentication failed. Incorrect email or password", { status: 401, log: false })
-      }
-      else {
-        const userObj = _omit(user.toObject(), ["password", "verification_token", "reset_password_token", "__v", "jti", "iat", "exp"])
-        if (userObj.account_verified !== true) {
-          throw new ServerError("Account not verified.", { status: 403, log: false })
-        }
-        const token = jwt.sign(userObj, process.env.SECRET, { expiresIn: "30 days", jwtid: randString() })
-        res.json({ token })
-      }
-    }
-    catch (error) {
-      console.log("### err at here", error)
-      res.handleServerError(error)
-    }
-  }
-}
-
-export const user = {
-  async get (req, res) {
-    let freshUser = {}
-    let user = await MerchantUsers.findOne({ _id: req.user._id })
-    if (user) {
-      freshUser = _omit(user.toObject(), ["password", "verification_token", "reset_password_token", "__v", "jti", "iat", "exp", "roles"])
-      if (Roles.isSuperAdmin(user.roles)) freshUser.iamawesome = true
-    }
-    req.user = { ...freshUser }
-
-    res.json({ user: freshUser })
-  }
-}
-
-export const logout = {
-  async post (req, res) {
-    res.json({ status: "OK" })
-  }
-}
+import * as Roles from "../../common/roles"
 
 export const check = {
   async post (req, res) {
@@ -70,6 +24,89 @@ export const check = {
     catch (error) {
       res.handleServerError(error)
     }
+  }
+}
+
+export const forgotPass = {
+  async post (req, res) {
+    try {
+      const { email } = req.body
+      if (!email) {
+        throw new ServerError("Email is required.", { status: 400 })
+      }
+      let cust = await MerchantUsers.findOne({ email })
+      if (!cust) throw new ServerError("Email not found.", { status: 400 })
+
+      if (cust.account_verified === false) {
+        throw new ServerError("Please verify your account.", { status: 403 })
+      }
+      if (cust.reset_password_attempt > 2) {
+        if (cust.reset_password_token !== "") {
+          cust.reset_password_token = ""
+          await cust.save()
+        }
+        throw new ServerError("short and stout", { status: 418 })
+      }
+
+      const signature = {
+        email: cust.email,
+        contact_number: cust.contact_number,
+        type: "reset"
+      }
+
+      cust.reset_password_token = COMMON.generateToken(signature)
+      cust.reset_password_attempt += 1
+      cust.reset_password_attempt_at = new Date()
+
+      await cust.save()
+      const resetLink = `${req.protocol}://${req.get("host")}/reset-password?i=${cust.reset_password_token}`
+      const emailHTML = COMMON.generateEmailHTMLButtonTemplate(
+        resetLink,
+        "Reset Password",
+        "Click the button to reset your password",
+        "Click Me"
+      )
+      await COMMON.sendEmail(cust.email, "[96travel Center] Reset Password", emailHTML)
+      res.json({ status: "OK" })
+    }
+    catch (err) {
+      res.handleServerError(err)
+    }
+  }
+}
+
+export const login = {
+  async post (req, res) {
+    try {
+      let { email, password } = req.body
+      let user = await MerchantUsers.findOne({ email })
+      if (!user) throw new ServerError("Authentication failed.", { status: 401, log: false })
+      let passwordHash = user.password
+      let matched = await bcrypt.compare(password, passwordHash)
+      if (!user || !matched || !email || !password) {
+        throw new ServerError("Authentication failed.", { status: 401, log: false })
+      }
+      else {
+        const userObj = _pick(user.toObject(), [
+          "name", "_id", "email", "merchant_id", "contact_number", "dark_theme", "localeLang"
+        ])
+        if (userObj.account_verified !== true) {
+          throw new ServerError("Account not verified.", { status: 403, log: false })
+        }
+        const token = jwt.sign(userObj, process.env.SECRET, { expiresIn: "30 days", jwtid: randString() })
+        res.json({ token })
+      }
+    }
+    catch (error) {
+      console.log("### err at here", error)
+      res.handleServerError(error)
+    }
+  }
+}
+
+export const logout = {
+  async post (req, res) {
+    res.json({ status: "OK" })
   }
 }
 
@@ -135,54 +172,6 @@ export const resetPass = {
   }
 }
 
-export const forgotPass = {
-  async post (req, res) {
-    try {
-      const { email } = req.body
-      if (!email) {
-        throw new ServerError("Email is required.", { status: 400 })
-      }
-      let cust = await MerchantUsers.findOne({ email })
-      if (!cust) throw new ServerError("Email not found.", { status: 400 })
-
-      if (cust.account_verified === false) {
-        throw new ServerError("Please verify your account.", { status: 403 })
-      }
-      if (cust.reset_password_attempt > 2) {
-        if (cust.reset_password_token !== "") {
-          cust.reset_password_token = ""
-          await cust.save()
-        }
-        throw new ServerError("short and stout", { status: 418 })
-      }
-
-      const signature = {
-        email: cust.email,
-        contact_number: cust.contact_number,
-        type: "reset"
-      }
-
-      cust.reset_password_token = COMMON.generateToken(signature)
-      cust.reset_password_attempt += 1
-      cust.reset_password_attempt_at = new Date()
-
-      await cust.save()
-      const resetLink = `${req.protocol}://${req.get("host")}/reset-password?i=${cust.reset_password_token}`
-      const emailHTML = COMMON.generateEmailHTMLButtonTemplate(
-        resetLink,
-        "Reset Password",
-        "Click the button to reset your password",
-        "Click Me"
-      )
-      await COMMON.sendEmail(cust.email, "[96travel Center] Reset Password", emailHTML)
-      res.json({ status: "OK" })
-    }
-    catch (err) {
-      res.handleServerError(err)
-    }
-  }
-}
-
 export const signup = {
   async post (req, res) {
     try {
@@ -222,6 +211,23 @@ export const signup = {
       console.log("#################ERROR", error.message)
       res.handleServerError(error)
     }
+  }
+}
+
+export const user = {
+  async get (req, res) {
+    let freshUser = {}
+    let user = await MerchantUsers.findOne({ _id: req.user._id })
+    if (user) {
+      freshUser = _pick(user.toObject(), [
+        "name", "_id", "email", "merchant_id", "contact_number", "dark_theme", "localeLang"
+      ])
+      if (Roles.isSuperAdmin(user.roles)) freshUser.iamawesome = true
+      if (Roles.isAdmin(user.roles)) freshUser.iamadmin = true
+    }
+    req.user = { ...freshUser }
+
+    res.json({ user: freshUser })
   }
 }
 

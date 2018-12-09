@@ -1,6 +1,7 @@
 import mongoose from "mongoose"
 
 const siteIdentitySchema = new mongoose.Schema({
+  "_id": String,
   "company_name": { type: String },
   "address_line_1": { type: String },
   "address_line_2": { type: String, optional: true },

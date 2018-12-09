@@ -4,6 +4,11 @@ import Vue from "vue"
 const USDtoMYRRate = 4.1
 
 const filters = {
+  capitalize (value) {
+    if (!value) return ""
+    value = value.toString()
+    return value.charAt(0).toUpperCase() + value.slice(1)
+  },
   convertToMYRFromUSD (price) {
     if (isNaN(price)) {
       return "N/A"

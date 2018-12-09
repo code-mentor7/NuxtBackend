@@ -1,5 +1,6 @@
 <template>
   <v-dialog
+    :fullscreen="$vuetify.breakpoint.mdAndDown"
     v-model="isShow"
     scrollable
     max-width="700px"
