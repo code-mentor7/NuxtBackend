@@ -4,10 +4,17 @@ import multer from "multer"
 
 import controllers from "./controllers"
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "tmp/uploads/")
+  }
+})
+
 let upload = multer({
   limits: {
     fileSize: 1 * 1024 * 1024 // 1MB
-  }
+  },
+  storage
 })
 
 const router = Router()

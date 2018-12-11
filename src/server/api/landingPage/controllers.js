@@ -24,7 +24,6 @@ const updateOneById = async (req, res, next) => {
           allowedSchema[objName][objIndex].media_type = "image"
 
           COMMON.removeFile(req.files[key][0].path) // remove file after upload complete
-          allowedSchema[key] = cloudinaryImgObj.public_id
         }
       }))
     }

@@ -17,6 +17,7 @@ const updateOneById = async (req, res, next) => {
         if (req.files[key][0].mimetype.indexOf("image") !== -1) {
           const cloudinaryImgObj = await cloudinaryUploadSingleFileWithBuffer(req.files[key][0])
           allowedSchema[key] = cloudinaryImgObj.public_id
+          COMMON.removeFile(req.files[key][0].path) // remove file after upload complete
         }
       }))
     }

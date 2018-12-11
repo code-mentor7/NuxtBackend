@@ -33,6 +33,11 @@ export const getSchemaKeys = (model, keysToOmit = ["_id", "id", "created_at", "u
   )
 }
 
+export const getType = (variable) => {
+  // https://stackoverflow.com/questions/332422/get-the-name-of-an-objects-type
+  return Object.prototype.toString.call(variable).slice(8, -1)
+}
+
 export const removeFile = (filePath) => {
   fs.unlink(filePath, function (err) {
     if (err) {

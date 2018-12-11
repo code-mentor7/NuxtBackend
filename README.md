@@ -5,6 +5,7 @@ routes middleware block access
 signup create merchant first
 signup check for merchant name
 refactor queryjs to include merchant id
+test time with gettype check
 
 # TOREAD
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Inheritance_and_the_prototype_chain

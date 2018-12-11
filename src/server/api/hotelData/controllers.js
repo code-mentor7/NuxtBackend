@@ -6,9 +6,9 @@ import { generateControllers } from "../../common/query"
 import Hotels from "./model"
 
 const bulkUpload = async (req, res) => {
-  // var bulk = Hotels.collection.initializeUnorderedBulkOp()
+  let bulkOp = Hotels.collection.initializeUnorderedBulkOp()
   res.send("qweasd")
-  console.log("### req.files,", req.files)
+  let counter = 0
 
   // https://github.com/mholt/PapaParse/issues/397
 
@@ -18,31 +18,30 @@ const bulkUpload = async (req, res) => {
     fastMode: true,
     skipEmptyLines: true,
     chunk: (results, parser) => {
-      // datas = datas.concat(results.data)
-      let progress = results.meta.cursor
-      console.log("### asd", results.data.length)
-
-      // let newPercent = Math.round(progress / size * 100);
-      // datas = datas.concat(results.data);
-
-      // Meteor.call('insertHotelData', results.data);
-      // if (newPercent === percent) return;
-      // percent = newPercent;
-      // this.uploadProgress = percent;
-      // console.log("progress", progress, size);
-      // console.log(newPercent, percent);
+      results.data.forEach((data) => {
+        bulkOp.find({ hotel_id: data.hotel_id }).upsert().updateOne(data)
+        counter++
+        console.log("### data.hotel_id", data.hotel_id)
+        if (counter % 5000 === 0) {
+          console.log("### inside each", counter)
+          // Execute per 1000 operations and re-initialize every 1000 update statements
+          bulkOp.execute(function (e, result) {
+            console.log("### inside eachexec", e)
+            console.log("### inside eachexec result", result)
+            // do something with result
+          })
+          bulkOp = Hotels.collection.initializeUnorderedBulkOp()
+        }
+      })
     },
     complete: () => {
-      console.log("### complete")
-      // this.uploadProgress = 100;
-
-      // this.setupSnackbar({
-      //     show: true,
-      //     text: message,
-      //     type: type
-      // });
-      // //  this.uploading = false;
-      // this.loading = false;
+      // Clean up queues
+      if (counter % 5000 !== 0) {
+        bulkOp.execute(function (e, result) {
+          // do something with result
+        })
+      }
+      console.log("### complete", counter)
     }
   })
 }
