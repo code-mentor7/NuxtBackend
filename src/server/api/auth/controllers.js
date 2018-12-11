@@ -88,7 +88,7 @@ export const login = {
       }
       else {
         const userObj = _pick(user.toObject(), [
-          "name", "_id", "email", "merchant_id", "contact_number", "dark_theme", "localeLang"
+          "name", "_id", "email", "merchant_id", "contact_number", "dark_theme", "localeLang", "account_verified"
         ])
         if (userObj.account_verified !== true) {
           throw new ServerError("Account not verified.", { status: 403, log: false })

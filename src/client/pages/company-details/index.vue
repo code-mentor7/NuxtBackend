@@ -361,7 +361,6 @@ export default {
       if (!this.$v.$invalid) {
         try {
           let formData = new FormData()
-          console.log("### this.$refs", this.$refs)
           _.each(this.$refs, (value, key) => {
             if (typeof value.getFile !== "undefined" && value.file.length > 0) {
               formData.append(`${key}`, value.getFile()[0])
@@ -370,12 +369,12 @@ export default {
           formData.append("jsonObj", JSON.stringify(this.$data))
           // https://stackoverflow.com/questions/16104078/appending-array-to-formdata-and-send-via-ajax
 
-          // await this.$axios.$put(`/api/site-identity/${this.$data._id}`, formData)
-          // this.$store.dispatch("setupSnackbar", {
-          //   show: true,
-          //   text: "Company Details updated.",
-          //   type: "success"
-          // })
+          await this.$axios.$put(`/api/site-identity/${this.$data._id}`, formData)
+          this.$store.dispatch("setupSnackbar", {
+            show: true,
+            text: "Company Details updated.",
+            type: "success"
+          })
         }
         catch (err) {
 

@@ -1,6 +1,6 @@
 import { Router } from "express"
 import authRoutes from "./auth/routes"
-// import hotelRoutes from "./hotels/routes"
+import hotelDataRoutes from "./hotelData/routes"
 import landingPageRoutes from "./landingPage/routes"
 import merchantUserRoutes from "./merchantUsers/routes"
 import productsRoutes from "./products/routes"
@@ -16,7 +16,7 @@ const router = Router()
 router.use("/", handleServerErrors())
 router.use("/auth", authRoutes)
 router.use("/users", merchantUserRoutes)
-// router.use("/hotels", hotelRoutes)
+router.use("/hotelData", hotelDataRoutes)
 router.use("/landing-page", landingPageRoutes)
 router.use("/products", productsRoutes)
 router.use("/roles", merchantRolesRoutes)

@@ -1,6 +1,7 @@
 import mongoose from "mongoose"
 
 const landingPageSchema = new mongoose.Schema({
+  "_id": String,
   "main_carousel": {
     type: Array,
     optional: true,

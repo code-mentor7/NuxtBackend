@@ -307,11 +307,9 @@ export default {
         let uploadPromiseArr = []
         this.submitting = true
         let formData = new FormData()
-        console.log("### this.$refs", this.$refs)
         _.each(this.$refs, (value, key) => {
           // TODO: why ref is array ?
           if (Array.isArray(value)) {
-            console.log("### is arrray", key)
             value = value[0]
           }
           if (typeof value.getFile !== "undefined" && value.file.length > 0) {
@@ -321,7 +319,7 @@ export default {
 
         try {
           formData.append("jsonObj", JSON.stringify(this.$data))
-          // await this.$axios.$put(`/api/site-identity/${this.$data._id}`, formData)
+          await this.$axios.$put(`/api/landing-page/${this.$data._id}`, formData)
           this.$store.dispatch("setupSnackbar", {
             show: true,
             text: "Landing Page updated.",

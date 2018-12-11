@@ -47,7 +47,7 @@
             </v-list-tile-action>
             <v-list-tile-title >Landing Page</v-list-tile-title>
           </v-list-tile>
-          <v-list-tile :to="{name:'uploadHotelData'}">
+          <v-list-tile :to="{name: `upload-hotel-data___${$i18n.locale}`}">
             <v-list-tile-action>
               <v-icon>cloud_upload</v-icon>
             </v-list-tile-action>

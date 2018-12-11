@@ -1,3 +1,4 @@
+import fs from "fs"
 import jwt from "jsonwebtoken"
 import { omit as _omit } from "lodash"
 import nodemailer from "nodemailer"
@@ -30,6 +31,15 @@ export const getSchemaKeys = (model, keysToOmit = ["_id", "id", "created_at", "u
   return Object.keys(
     _omit(model.schema.tree, keysToOmit)
   )
+}
+
+export const removeFile = (filePath) => {
+  fs.unlink(filePath, function (err) {
+    if (err) {
+      console.error(err)
+    }
+    console.log("File has been Deleted")
+  })
 }
 
 export const sendEmail = async (mailTo, mailSubject, mailBody, mailFrom = "96travel Center <support@96travel.com>") => {
