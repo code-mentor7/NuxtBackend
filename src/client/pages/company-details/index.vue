@@ -359,6 +359,7 @@ export default {
     async submit () {
       this.$v.$touch()
       if (!this.$v.$invalid) {
+        this.submitting = true
         try {
           let formData = new FormData()
           _.each(this.$refs, (value, key) => {
@@ -370,6 +371,7 @@ export default {
           // https://stackoverflow.com/questions/16104078/appending-array-to-formdata-and-send-via-ajax
 
           await this.$axios.$put(`/api/site-identity/${this.$data._id}`, formData)
+          this.submitting = false
           this.$store.dispatch("setupSnackbar", {
             show: true,
             text: "Company Details updated.",

@@ -320,6 +320,7 @@ export default {
         try {
           formData.append("jsonObj", JSON.stringify(this.$data))
           await this.$axios.$put(`/api/landing-page/${this.$data._id}`, formData)
+          this.submitting = false
           this.$store.dispatch("setupSnackbar", {
             show: true,
             text: "Landing Page updated.",

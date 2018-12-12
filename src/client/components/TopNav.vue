@@ -54,7 +54,7 @@
             <v-list-tile-title >Upload Agoda Hotel Data</v-list-tile-title>
           </v-list-tile>
         </v-list-group>
-        <v-list-tile :to="{name:'products'}">
+        <v-list-tile :to="{name: `products___${$i18n.locale}`}">
           <v-list-tile-action>
             <v-icon>fa fa-cubes</v-icon>
           </v-list-tile-action>

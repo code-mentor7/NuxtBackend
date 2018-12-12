@@ -88,7 +88,7 @@
 
 <script>
 // import { mapActions, mapGetters } from "vuex"
-// import Papa from "papaparse"
+import Papa from "papaparse"
 export default {
   data () {
     return {
@@ -116,7 +116,7 @@ export default {
     filesChange (fieldName, fileList, event) {
       // handle file changes
       if (!fileList.length) return
-      if (fieldName == "hotel_file") {
+      if (fieldName === "hotel_file") {
         this.hotel_file = fileList
         this.hotel_filename = fileList[0].name
       }
@@ -135,19 +135,36 @@ export default {
         let formData = new FormData()
         formData.append("hotel_file", this.hotel_file[0])
         await this.$axios.$post(`/api/hotelData/upload`, formData)
+        // Papa.LocalChunkSize = 3000000 // kb
         // Papa.parse(this.hotel_file[0], {
         //   header: true,
         //   // worker: true,
+        //   quoteChar: "\"",
+        //   escapeChar: "\"",
         //   fastMode: true,
         //   skipEmptyLines: true,
-        //   chunk: (results, parser) => {
-        //     datas = datas.concat(results.data)
+        //   // chunkSize: "500",
+        //   chunk: async (results, parser) => {
+        //     console.log("### ", results.data.length)
+        //     // datas = datas.concat(results.data)
         //     let progress = results.meta.cursor
 
         //     let newPercent = Math.round(progress / size * 100)
         //     // datas = datas.concat(results.data);
 
-        //     Meteor.call("insertHotelData", results.data)
+        //     // Meteor.call("insertHotelData", results.data)
+        //     if (!parser.paused()) {
+        //       parser.pause()
+        //     }
+        //     // setTimeout(function () {
+        //     //   results = null
+        //     //   if (parser.paused()) {
+        //     //     parser.resume()
+        //     //   }
+        //     // }, Math.random() * 10000)
+        //     // parser.pause()
+        //     await this.$axios.$post(`/api/hotelData/upload`, { data: results.data })
+        //     parser.resume()
         //     if (newPercent === percent) return
         //     percent = newPercent
         //     this.uploadProgress = percent
@@ -157,11 +174,11 @@ export default {
         //   complete: () => {
         //     this.uploadProgress = 100
 
-        //     this.setupSnackbar({
-        //       show: true,
-        //       text: message,
-        //       type: type
-        //     })
+        //     // this.setupSnackbar({
+        //     //   show: true,
+        //     //   text: message,
+        //     //   type: type
+        //     // })
         //     //  this.uploading = false;
         //     this.loading = false
         //   }

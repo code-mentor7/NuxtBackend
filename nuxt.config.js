@@ -60,7 +60,8 @@ module.exports = {
   env: {
     // for client side env
     CLOUDINARY_NAME: process.env.CLOUDINARY_NAME || "",
-    CLOUDINARY_UPLOAD_PRESET: process.env.CLOUDINARY_UPLOAD_PRESET || ""
+    CLOUDINARY_UPLOAD_PRESET: process.env.CLOUDINARY_UPLOAD_PRESET || "",
+    NODE_ENV: process.env.NODE_ENV
   },
   head: {
     title: "Nuxt FullStack Boiler",
