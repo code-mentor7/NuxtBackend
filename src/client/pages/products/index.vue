@@ -202,32 +202,14 @@ import _ from "lodash"
 export default {
   async fetch ({ app, store, redirect, route }) {
     try {
-      const getData = app.$axios.$post("/api/products", {
-        search: "",
-        filter: {
-          disabled: false
-        }
+      const apiCallController = app.$commonFunction.generateAPICallController({
+        apiEndpoint: "/api/products",
+        axios: app.$axios,
+        query: app.$commonFunction.setSearchQuery()
       })
-      const getCount = app.$axios.$post("/api/products/count", {
-        search: "",
-        filter: {
-          disabled: false
-        }
-      })
-      let promiseArr = [
-        getData,
-        getCount
-      ]
-
-      let products = []
-      let productsCount = 0
-      await Promise.all(promiseArr)
-        .then((promiseResultArray) => {
-          products = promiseResultArray[0]
-          productsCount = promiseResultArray[1]
-        })
-      app.store.dispatch("products/setProducts", products)
-      app.store.dispatch("products/setProductsCount", productsCount)
+      const promiseResultArray = await apiCallController.getAllAndCount()
+      app.store.dispatch("products/setProducts", promiseResultArray[0])
+      app.store.dispatch("products/setProductsCount", promiseResultArray[1])
     }
     catch (err) {
       console.log("&&&", err)
@@ -321,7 +303,7 @@ export default {
   created: function () {
     this.debouncedSearch = _.debounce(this.updateSearch, 700)
   },
-  mounted: function () {
+  mounted () {
     // this.query = { merchant_id: this.merchantData._id }
     // console.log("this.userIsAdmin", this.userIsAdmin)
     // this.selector = { merchant_id: this.merchantData._id }
@@ -358,7 +340,7 @@ export default {
       }
       this.updateSearch()
     },
-    getDataFromApi () {
+    async getDataFromApi () {
       const { sortBy, descending, page, rowsPerPage } = this.pagination
       this.sortBy = sortBy
       this.sorting = -1
@@ -369,6 +351,20 @@ export default {
       this.sortObj = {}
       this.sortObj[this.sortBy] = this.sorting
       this.limit = rowsPerPage || 0
+      try {
+        this.$nuxt.$loading.start()
+        const apiCallController = this.$helpers.generateAPICallController({
+          apiEndpoint: "/api/products",
+          axios: this.$axios,
+          query: this.$helpers.setSearchQuery(this.query, "", this.skip, this.limit)
+        })
+        const products = await apiCallController.getAll()
+        this.$store.dispatch("products/setProducts", products)
+        this.$nuxt.$loading.finish()
+      }
+      catch (err) {
+        console.log("### ", err)
+      }
     },
     updateSearch () {
       let orArr = []

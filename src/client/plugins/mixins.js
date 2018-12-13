@@ -2,7 +2,6 @@ import Vue from "vue"
 import _ from "lodash"
 
 const mixins = {
-  // methods: {
   addLeadingZero (num) {
     return (num < 10 ? `0${num}` : num)
   },
@@ -71,9 +70,17 @@ const mixins = {
     }
     return type
   },
-  // getArrayOfAPIDataAndCount (app, store, route, filter) {
-
-  // },
+  generateAPICallController (config) {
+    if (!config.axios || !config.apiEndpoint) return console.warn("Parameters required")
+    return Object.assign(
+      {
+        getAll: this.getAllAPI,
+        getAllCount: this.getAllCountAPI,
+        getAllAndCount: this.getAllAndCountAPI
+      },
+      { ...config, ...this }
+    )
+  },
   getLocaleLangCode (localeValue) {
     const LOCALE_LANG = {
       en: "English",
@@ -84,42 +91,19 @@ const mixins = {
     }
     return LOCALE_LANG[localeValue] || "us"
   },
-  getProductsAPI (axios, query) {
-    if (!axios) return console.warn("Products parameters required")
-    try {
-      const getData = axios.$post("/api/products", query)
-
-      // let promiseArr = [
-      //   getData,
-      //   getCount
-      // ]
-
-      // let products = []
-      // let productsCount = 0
-      // await Promise.all(promiseArr)
-      //   .then((promiseResultArray) => {
-      //     products = promiseResultArray[0]
-      //     productsCount = promiseResultArray[1]
-      // //   })
-      // store.dispatch("products/setProducts", products)
-      // store.dispatch("products/setProductsCount", productsCount)
-    }
-    catch (err) {
-
-    }
+  getAllAPI () {
+    return this.axios.$post(this.apiEndpoint, this.query)
   },
-  getProductsAPICount (axios) {
-    try {
-      return axios.$post("/api/products/count", {
-        search: "",
-        filter: {
-          disabled: false
-        }
-      })
-    }
-    catch (err) {
-
-    }
+  getAllCountAPI () {
+    const countEndpoint = this.apiCountEndpoint || `${this.apiEndpoint}/count`
+    return this.axios.$post(countEndpoint, _.pick(this.query, ["search", "filter"]))
+  },
+  getAllAndCountAPI () {
+    let promiseArr = [
+      this.getAllAPI(),
+      this.getAllCountAPI()
+    ]
+    return Promise.all(promiseArr)
   },
   getSchemaObjAndSetDefaultEmptyObj (collection) {
     const schemaObj = collection.simpleSchema().schema()
@@ -157,7 +141,6 @@ const mixins = {
     if (!user) return false
     return (user.iamawesome || user.iamadmin)
   }
-  // }
 }
 
 const commonFunction = {

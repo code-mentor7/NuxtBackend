@@ -7,8 +7,8 @@
           <h4><nuxt-link to="/">
             Back to home
           </nuxt-link></h4>
-          <p v-if="process.env.NODE_ENV === 'development'">
-            {{ messages.client_error_details }}
+          <p v-if="isDev">
+            {{ message }}
           </p>
         </v-flex>
       </v-layout>
@@ -29,7 +29,11 @@ export default {
       return (this.error && this.error.statusCode) || 500
     },
     message () {
-      return this.error.message || `<%= messages.client_error %>`
+      return this.error.message
+    },
+    isDev () {
+      console.log("### process.env.NODE_ENV", process.env.NODE_ENV)
+      return process.env.NODE_ENV === "development"
     }
   }
 }
