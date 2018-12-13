@@ -25,7 +25,7 @@
             <v-flex xs12>
               <v-text-field
                 v-model.trim="currentPass"
-                :error-messages="checkError('currentPass', validationProps, $v, 'Current Password')"
+                :error-messages="$helpers.checkError('currentPass', validationProps, $v, 'Current Password')"
                 label="Current Password"
                 name="currentPass"
                 type="password"
@@ -33,7 +33,7 @@
               />
               <v-text-field
                 v-model.trim="newPass"
-                :error-messages="checkError('newPass', validationProps, $v, 'New Password')"
+                :error-messages="$helpers.checkError('newPass', validationProps, $v, 'New Password')"
                 label="New Password"
                 name="newPass"
                 type="password"
@@ -41,7 +41,7 @@
               />
               <v-text-field
                 v-model.trim="confirmNewPass"
-                :error-messages="checkError('confirmNewPass', validationProps, $v, 'Confirm New Password')"
+                :error-messages="$helpers.checkError('confirmNewPass', validationProps, $v, 'Confirm New Password')"
                 label="Confirm New Password"
                 name="confirmNewPass"
                 type="password"

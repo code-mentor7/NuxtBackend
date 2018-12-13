@@ -28,7 +28,7 @@
             <v-card-text>
               <v-text-field
                 v-model.trim="email"
-                :error-messages="checkError('email', validationProps, $v)"
+                :error-messages="$helpers.checkError('email', validationProps, $v)"
                 prepend-icon="person"
                 name="email"
                 label="Email"

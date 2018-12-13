@@ -20,14 +20,14 @@
             <v-card-text>
               <v-text-field
                 v-model.trim="email"
-                :error-messages="checkError('email', validationProps, $v)"
+                :error-messages="$helpers.checkError('email', validationProps, $v)"
                 prepend-icon="person"
                 name="email"
                 label="Email"
                 type="text"
                 @input="$v.email.$touch()"/>
               <v-text-field
-                :error-messages="checkError('password', validationProps, $v)"
+                :error-messages="$helpers.checkError('password', validationProps, $v)"
                 v-model="password"
                 :append-icon="showPassword ? 'visibility_off' : 'visibility'"
                 :type="showPassword ? 'text' : 'password'"

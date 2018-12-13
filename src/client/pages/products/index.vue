@@ -233,6 +233,7 @@ export default {
       console.log("&&&", err)
     }
   },
+  watchQuery: true,
   data () {
     let defaultData = {
       dialog: false,
@@ -384,7 +385,7 @@ export default {
       this.$router.push({ name: "productEdit", params: { id: itemId } })
     },
     setProdState (id, state, type) {
-      let _type = this.$options.filters.capitalize(type)
+      let _type = this.$helpers.capitalize(type)
       let color = type === "enable" ? "green" : "red"
       this.$root.$confirm(`${_type} Product`, "Are you sure?", { color }).then((confirm) => {
         if (confirm) {

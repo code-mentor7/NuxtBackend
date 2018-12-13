@@ -20,7 +20,7 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-group
-          v-if="userIsAwesome()"
+          v-if="$helpers.userIsAwesome($auth.user)"
           value="true"
           avatar
         >
@@ -63,7 +63,7 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile
-          v-if="userIsAdmin()"
+          v-if="$helpers.userIsAdmin($auth.user)"
           :to="{name:'transactions'}">
           <v-list-tile-action>
             <v-icon>shopping_cart</v-icon>
@@ -122,7 +122,7 @@
           <v-divider/>
           <v-list>
             <v-list-tile
-              v-if="userIsAdmin()"
+              v-if="$helpers.userIsAdmin($auth.user)"
               @click="addUserClick">
               <v-list-tile-content>Add User</v-list-tile-content>
             </v-list-tile>
@@ -311,7 +311,7 @@ export default {
     setLang (langValue) {
       this.lang = {
         value: langValue,
-        code: this.getLocaleLangCode(langValue)
+        code: this.$helpers.getLocaleLangCode(langValue)
       }
       // this.setLocaleLang(this.lang);
       this.$store.dispatch("setLocaleLang", this.lang)
@@ -335,7 +335,7 @@ export default {
   //   userId: function () {
   //     return Meteor.userId() || false
   //   },
-  //   userIsAdmin () {
+  //   $helpers.userIsAdmin () {
   //     return Roles.userIsInRole(Meteor.userId(), ["admin"], "backend")
   //   },
   //   email: function () {

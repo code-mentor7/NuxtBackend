@@ -21,14 +21,14 @@
                     <v-flex xs12>
                       <v-text-field
                         v-model.trim="company_name"
-                        :error-messages="checkError('company_name', validationProps, $v, 'Company Name')"
+                        :error-messages="$helpers.checkError('company_name', validationProps, $v, 'Company Name')"
                         name="company_name"
                         label="Company Name"
                         type="text"
                         @input="$v.company_name.$touch()"/>
                       <v-text-field
                         v-model.trim="address_line_1"
-                        :error-messages="checkError('address_line_1', validationProps, $v, 'Address Line 1')"
+                        :error-messages="$helpers.checkError('address_line_1', validationProps, $v, 'Address Line 1')"
                         name="address_line_1"
                         label="Address Line 1"
                         type="text"

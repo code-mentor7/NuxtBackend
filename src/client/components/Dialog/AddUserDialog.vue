@@ -36,14 +36,14 @@
                 @input="$v.email.$touch(); emailInput()"/>
               <v-text-field
                 v-model.trim="mobile_number"
-                :error-messages="checkError('mobile_number', validationProps, $v, 'Mobile Number')"
+                :error-messages="$helpers.checkError('mobile_number', validationProps, $v, 'Mobile Number')"
                 prepend-icon="phone"
                 name="mobile_number"
                 label="Mobile Number"
                 type="number"
                 @input="$v.mobile_number.$touch()"/>
               <v-text-field
-                :error-messages="checkError('password', validationProps, $v)"
+                :error-messages="$helpers.checkError('password', validationProps, $v)"
                 v-model="password"
                 :append-icon="showPassword ? 'visibility_off' : 'visibility'"
                 :type="showPassword ? 'text' : 'password'"
@@ -55,7 +55,7 @@
                 @click:append="showPassword = !showPassword"
               />
               <v-text-field
-                :error-messages="checkError('confirm_password', validationProps, $v, 'Password')"
+                :error-messages="$helpers.checkError('confirm_password', validationProps, $v, 'Password')"
                 v-model="confirm_password"
                 :append-icon="showConfirmPassword ? 'visibility_off' : 'visibility'"
                 :type="showConfirmPassword ? 'text' : 'password'"
@@ -67,7 +67,7 @@
                 @click:append="showConfirmPassword = !showConfirmPassword"
               />
               <v-combobox
-                :error-messages="checkError('roles', validationProps, $v, 'User Role')"
+                :error-messages="$helpers.checkError('roles', validationProps, $v, 'User Role')"
                 v-model="roles"
                 :items="userRoles"
                 item-text="name"
@@ -183,7 +183,7 @@ export default {
     //   "merchantData"
     // ]),
     emailErrors () {
-      let err = this.checkError("email", this.validationProps, this.$v)
+      let err = this.$helpers.checkError("email", this.validationProps, this.$v)
       return [...err, ...this.isEmailExist]
     },
     isShow: {
@@ -199,7 +199,7 @@ export default {
     }
   },
   created () {
-    if (this.userIsAdmin()) {
+    if (this.$helpers.userIsAdmin(this.$auth.user)) {
       this.$axios.$get("/api/roles")
         .then((res) => {
           this.userRoles = res
@@ -239,7 +239,7 @@ export default {
           contact_number: this.mobile_number,
           roles: this.roles._id
         }
-        this.removeEmptyObjectVariable(attr) // Remove empty value prior to create
+        this.$helpers.removeEmptyObjectVariable(attr) // Remove empty value prior to create
         let msg = `Account created. We have sent ${name} an email for verification.`
         let type = "success"
         this.$axios.$post("/api/auth/signup", attr)
