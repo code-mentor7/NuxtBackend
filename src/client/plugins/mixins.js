@@ -153,5 +153,5 @@ Vue.use(commonFunction)
 
 export default (context, inject) => {
   // inside into nuxt context (ssr)
-  inject("commonFunction", mixins)
+  inject("helpers", mixins)
 }

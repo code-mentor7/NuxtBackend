@@ -200,16 +200,20 @@
 import { mapState } from "vuex"
 import _ from "lodash"
 export default {
-  async fetch ({ app, store, redirect, route }) {
+  async asyncData ({ app, store, redirect, route }) {
     try {
-      const apiCallController = app.$commonFunction.generateAPICallController({
+      const apiCallController = app.$helpers.generateAPICallController({
         apiEndpoint: "/api/products",
         axios: app.$axios,
-        query: app.$commonFunction.setSearchQuery()
+        query: app.$helpers.setSearchQuery()
       })
       const promiseResultArray = await apiCallController.getAllAndCount()
-      app.store.dispatch("products/setProducts", promiseResultArray[0])
-      app.store.dispatch("products/setProductsCount", promiseResultArray[1])
+      return {
+        products: promiseResultArray[0],
+        productsCount: promiseResultArray[1]
+      }
+      // app.store.dispatch("products/setProducts", promiseResultArray[0])
+      // app.store.dispatch("products/setProductsCount", promiseResultArray[1])
     }
     catch (err) {
       console.log("&&&", err)
@@ -256,29 +260,31 @@ export default {
           sortable: false
         }
       ],
-      search: null,
-      itemPerRow: [10, 25, 50],
-      pagination: { sortBy: "updated_at", descending: true },
-      loading: false,
-      limit: 10,
-      sortBy: "updated_at",
-      sorting: -1,
-      sortObj: {},
-      skip: 0,
-      query: {},
-      selector: {},
-      searchValue: "",
       isActiveFilter: false,
       isInactiveFilter: false,
-      productFilter: []
+      itemPerRow: [10, 25, 50],
+      loading: false,
+      limit: 10,
+      pagination: { sortBy: "updated_at", descending: true },
+      productsCount: 0,
+      productFilter: [],
+      products: [],
+      query: {},
+      search: null,
+      searchValue: "",
+      selector: {},
+      skip: 0,
+      sortBy: "updated_at",
+      sorting: -1,
+      sortObj: {}
     }
     return defaultData
   },
   computed: {
-    ...mapState({
-      products: state => state.products.products,
-      productsCount: state => state.products.productsCount
-    })
+    // ...mapState({
+    //   products: state => state.products.products,
+    //   productsCount: state => state.products.productsCount
+    // })
     // merchantId () {
     //     let merchantId = -1;
     //     if(this.merchant){
@@ -340,42 +346,54 @@ export default {
       }
       this.updateSearch()
     },
+    generateController () {
+      return this.$helpers.generateAPICallController({
+        apiEndpoint: "/api/products",
+        axios: this.$axios,
+        query: this.$helpers.setSearchQuery(this.query, "", this.skip, this.limit)
+      })
+    },
     async getDataFromApi () {
       const { sortBy, descending, page, rowsPerPage } = this.pagination
       this.sortBy = sortBy
       this.sorting = -1
       this.skip = rowsPerPage * (page - 1) || 0
+      if (!rowsPerPage) {
+        return ""
+      }
+      if (this.skip === 0 && this.limit === rowsPerPage) {
+        return ""
+      }
       if (!descending) {
         this.sorting = 1
       }
       this.sortObj = {}
       this.sortObj[this.sortBy] = this.sorting
       this.limit = rowsPerPage || 0
+      this.fetchAllProducts()
+    },
+    async fetchAllProducts () {
+      this.$nuxt.$loading.start()
       try {
-        this.$nuxt.$loading.start()
-        const apiCallController = this.$helpers.generateAPICallController({
-          apiEndpoint: "/api/products",
-          axios: this.$axios,
-          query: this.$helpers.setSearchQuery(this.query, "", this.skip, this.limit)
-        })
-        const products = await apiCallController.getAll()
-        this.$store.dispatch("products/setProducts", products)
-        this.$nuxt.$loading.finish()
+        this.products = await this.generateController().getAll()
       }
       catch (err) {
-        console.log("### ", err)
+        this.$nuxt.$loading.finish()
       }
+      return this.$nuxt.$loading.finish()
     },
     updateSearch () {
       let orArr = []
+      let searchableColumn = ["name", "sku"]
       this.headers.forEach((head) => {
-        if (head.value) {
+        if (head.value && searchableColumn.indexOf(head.value) !== -1) {
           let queryObj = {}
           queryObj[head.value] = { $regex: this.searchValue, $options: "i" }
           orArr.push(queryObj)
         }
       })
       this.query = { ...this.selector, $or: orArr }
+      this.fetchAllProducts()
     },
     editItem (itemId) {
       this.$router.push({ name: "productEdit", params: { id: itemId } })
