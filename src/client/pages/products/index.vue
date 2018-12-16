@@ -276,7 +276,7 @@ export default {
       skip: 0,
       sortBy: "updated_at",
       sorting: -1,
-      sortObj: {}
+      sortObj: { updated_at: -1 }
     }
     return defaultData
   },
@@ -296,7 +296,7 @@ export default {
   watch: {
     pagination: {
       handler () {
-        this.getDataFromApi()
+        this.debouncedTableInteration()
       },
       deep: true
     },
@@ -308,6 +308,7 @@ export default {
   },
   created: function () {
     this.debouncedSearch = _.debounce(this.updateSearch, 700)
+    this.debouncedTableInteration = _.debounce(this.getDataFromApi, 500)
   },
   mounted () {
     // this.query = { merchant_id: this.merchantData._id }
@@ -350,23 +351,30 @@ export default {
       return this.$helpers.generateAPICallController({
         apiEndpoint: "/api/products",
         axios: this.$axios,
-        query: this.$helpers.setSearchQuery(this.query, "", this.skip, this.limit)
+        query: this.$helpers.setSearchQuery(this.query, "", this.skip, this.limit, this.sortObj)
       })
     },
     async getDataFromApi () {
       const { sortBy, descending, page, rowsPerPage } = this.pagination
+
       this.sortBy = sortBy
-      this.sorting = -1
+      this.sorting = !descending ? 1 : -1
       this.skip = rowsPerPage * (page - 1) || 0
-      if (!rowsPerPage) {
+
+      if (this.isIgnoreTableInteraction(rowsPerPage)) {
         return ""
       }
-      if (this.skip === 0 && this.limit === rowsPerPage) {
-        return ""
-      }
-      if (!descending) {
-        this.sorting = 1
-      }
+      // if (!rowsPerPage ) {
+      //   return ""
+      // }
+      // if (this.skip === 0 && this.limit === rowsPerPage) {
+      //   return ""
+      // }
+      // if (this.sortObj[this.sortBy] && this.sortObj[this.sortBy] === this.sorting) {
+      //   console.log("### same nia")
+      //   return ""
+      // }
+
       this.sortObj = {}
       this.sortObj[this.sortBy] = this.sorting
       this.limit = rowsPerPage || 0
@@ -375,12 +383,24 @@ export default {
     async fetchAllProducts () {
       this.$nuxt.$loading.start()
       try {
-        this.products = await this.generateController().getAll()
+        const promiseResultArray = await this.generateController().getAllAndCount()
+        this.products = promiseResultArray[0]
+        this.productsCount = promiseResultArray[1]
+        // this.products = await this.generateController().getAll()
       }
       catch (err) {
         this.$nuxt.$loading.finish()
       }
       return this.$nuxt.$loading.finish()
+    },
+    isIgnoreTableInteraction (rowsPerPage) {
+      if (
+        (this.skip === 0 && this.limit === rowsPerPage) &&
+        (this.sortObj[this.sortBy] && this.sortObj[this.sortBy] === this.sorting)
+      ) {
+        return true
+      }
+      return false
     },
     updateSearch () {
       let orArr = []
@@ -396,7 +416,8 @@ export default {
       this.fetchAllProducts()
     },
     editItem (itemId) {
-      this.$router.push({ name: "productEdit", params: { id: itemId } })
+      return this.$router.push({ name: `products-edit-id___${this.$i18n.locale}`, params: { id: itemId } })
+      // this.$router.push({ name: "productEdit", params: { id: itemId } })
     },
     setProdState (id, state, type) {
       let _type = this.$helpers.capitalize(type)
@@ -423,7 +444,7 @@ export default {
       })
     },
     clickCreate () {
-      this.$router.push({ name: "ProductCreate" })
+      return this.$router.push({ name: `products-create___${this.$i18n.locale}` })
     }
   }
   // meteor: {

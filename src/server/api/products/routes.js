@@ -1,20 +1,25 @@
 import { Router } from "express"
-// import authenticate from '~/middleware/authenticate'
+import jwt from "express-jwt"
 import controllers from "./controllers"
 
 const router = Router()
 
 // router.param("id", controllers.findByParam)
 
-// router.get("/", controllers.getAll)
+router.use(jwt({ secret: process.env.SECRET }))
 
 router.route("/")
-  .post(controllers.textSearch)
+  .get(controllers.getAll)
+  .post(controllers.createOne)
+
+router.route("/edit/:id")
+  .get(controllers.findById)
+  .put(controllers.updateOneById)
 
 router.route("/slug/:slug")
-  .post(controllers.findByQuery)
+  .get(controllers.findByQuery)
 
 router.route("/count")
-  .post(controllers.textSearchCount)
+  .get(controllers.getAllCount)
 
 export default router

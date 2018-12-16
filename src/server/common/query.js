@@ -10,6 +10,10 @@ export const controllers = {
     return docToDelete.remove()
   },
 
+  findById (model, id) {
+    return model.findById(id)
+  },
+
   findByParam (model, id) {
     return model.findById(id)
   },
@@ -22,8 +26,12 @@ export const controllers = {
     return Promise.resolve(docToGet)
   },
 
-  getAll (model) {
-    return model.find({})
+  getAll (model, searchFilter = {}, searchOptions = {}) {
+    return model.find(searchFilter, null, searchOptions)
+  },
+
+  getAllCount (model, searchFilter = {}) {
+    return model.countDocuments(searchFilter)
   },
 
   async textSearch (model, searchValue, searchFilter = {}, searchOptions = { limit: 10, skip: 0 }) {
@@ -57,8 +65,9 @@ export const controllers = {
   }
 }
 
-export const createOne = (model) => (req, res, next) => {
-  return controllers.createOne(model, req.body)
+export const createOne = (model, allowedSchema) => (req, res, next) => {
+  const dataToBeUpdated = pick(req.body, allowedSchema)
+  return controllers.createOne(model, dataToBeUpdated)
     .then(doc => res.status(201).json(doc))
     .catch(error => next(error))
 }
@@ -67,6 +76,17 @@ export const deleteOne = (model) => (req, res, next) => {
   return controllers.deleteOne(req.docFromId)
     .then(doc => res.status(201).json(doc))
     .catch(error => next(error))
+}
+
+export const findById = (model) => (req, res, next) => {
+  const id = req.params.id
+  return controllers.findById(model, id)
+    .then(doc => {
+      res.status(200).json(doc)
+    })
+    .catch(error => {
+      next(error)
+    })
 }
 
 export const findByParam = (model) => (req, res, next, id) => {
@@ -103,7 +123,26 @@ export const getOne = (model) => (req, res, next) => {
 }
 
 export const getAll = (model) => (req, res, next) => {
-  return controllers.getAll(model)
+  let searchFilter = req.query.filter || {}
+  let searchOptions = req.query.options || {}
+  try {
+    searchFilter = JSON.parse(req.query.filter)
+    searchOptions = JSON.parse(req.query.options)
+  }
+  catch (err) {}
+
+  return controllers.getAll(model, searchFilter, searchOptions)
+    .then(docs => res.json(docs))
+    .catch(error => next(error))
+}
+
+export const getAllCount = (model) => (req, res, next) => {
+  let searchFilter = req.query.filter || {}
+  try {
+    searchFilter = JSON.parse(req.query.filter)
+  }
+  catch (err) {}
+  return controllers.getAllCount(model, searchFilter)
     .then(docs => res.json(docs))
     .catch(error => next(error))
 }
@@ -157,11 +196,13 @@ export const updateOneById = (model, allowedSchema) => async (req, res, next) =>
 
 export const generateControllers = (model, allowedSchema = [], overrides = {}) => {
   const defaults = {
-    createOne: createOne(model),
+    createOne: createOne(model, allowedSchema),
     deleteOne: deleteOne(model),
+    findById: findById(model),
     findByParam: findByParam(model),
     findByQuery: findByQuery(model),
     getAll: getAll(model),
+    getAllCount: getAllCount(model),
     getOne: getOne(model),
     textSearch: textSearch(model),
     textSearchCount: textSearchCount(model),

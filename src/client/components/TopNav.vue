@@ -62,7 +62,7 @@
             <v-list-tile-title>{{ $t('product') }}</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile
+        <!-- <v-list-tile
           v-if="$helpers.userIsAdmin($auth.user)"
           :to="{name:'transactions'}">
           <v-list-tile-action>
@@ -71,7 +71,7 @@
           <v-list-tile-content>
             <v-list-tile-title>Transactions</v-list-tile-title>
           </v-list-tile-content>
-        </v-list-tile>
+        </v-list-tile> -->
       </v-list>
     </v-navigation-drawer>
     <v-toolbar
@@ -131,6 +131,7 @@
                 v-for="(item, i) in langList"
                 v-if="item.value != lang.value"
                 :key="i"
+                :to="switchLocalePath(item.value)"
                 @click="onChangeLang(item.value)"
               >
                 <v-list-tile-title>
@@ -242,6 +243,7 @@ export default {
     // ]),
   },
   mounted () {
+    console.log("### router", this.$router.options.routes)
     this.debouncedAction = _.debounce(this.updateUser, 2000)
     // let user = Meteor.user()
     // if (user) {
@@ -314,7 +316,7 @@ export default {
         code: this.$helpers.getLocaleLangCode(langValue)
       }
       // this.setLocaleLang(this.lang);
-      this.$store.dispatch("setLocaleLang", this.lang)
+      this.$store.commit("i18n/I18N_SET_LOCALE", this.lang.value)
       this.$i18n.locale = this.lang.value
     },
     sideNav () {

@@ -92,11 +92,11 @@ const mixins = {
     return LOCALE_LANG[localeValue] || "us"
   },
   getAllAPI () {
-    return this.axios.$post(this.apiEndpoint, this.query)
+    return this.axios.$get(this.apiEndpoint, { params: this.query })
   },
   getAllCountAPI () {
     const countEndpoint = this.apiCountEndpoint || `${this.apiEndpoint}/count`
-    return this.axios.$post(countEndpoint, _.pick(this.query, ["search", "filter"]))
+    return this.axios.$get(countEndpoint, { params: _.pick(this.query, ["search", "filter"]) })
   },
   getAllAndCountAPI () {
     let promiseArr = [
@@ -123,13 +123,14 @@ const mixins = {
       }
     })
   },
-  setSearchQuery (filter = {}, searchValue = "", skip = 0, limit = 10) {
+  setSearchQuery (filter = {}, searchValue = "", skip = 0, limit = 10, sort = { updated_at: -1 }) {
     return {
       search: searchValue,
       filter,
       options: {
         skip,
-        limit
+        limit,
+        sort
       }
     }
   },

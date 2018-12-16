@@ -1,5 +1,7 @@
 import mongoose from "mongoose"
+import slug from "mongoose-slug-updater"
 import Merchants from "../merchants/models"
+mongoose.plugin(slug)
 const Schema = mongoose.Schema
 
 const productSchema = new mongoose.Schema({
@@ -7,11 +9,7 @@ const productSchema = new mongoose.Schema({
     type: String,
     index: 1
   },
-  "slug": {
-    type: String,
-    index: 1,
-    optional: true
-  },
+  "slug": { type: String, slug: ["name"], forceIdSlug: true, unique: true },
   "sku": {
     type: String,
     index: 1

@@ -29,7 +29,7 @@ export default {
       return (this.error && this.error.statusCode) || 500
     },
     message () {
-      return this.error.message
+      return this.error ? this.error.message : ""
     },
     isDev () {
       console.log("### process.env.NODE_ENV", process.env.NODE_ENV)

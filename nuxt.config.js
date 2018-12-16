@@ -55,6 +55,9 @@ module.exports = {
   cache: true,
   css: [
     // { src: 'vuetify/dist/vuetify.min.css', lang: 'css' },
+    "quill/dist/quill.snow.css",
+    "quill/dist/quill.bubble.css",
+    "quill/dist/quill.core.css",
     { src: "~/assets/style/app.styl", lang: "styl" }
   ],
   env: {
@@ -94,33 +97,35 @@ module.exports = {
     "@nuxtjs/font-awesome",
     ["nuxt-i18n", {
       // Options
+      vueI18nLoader: false,
       seo: false,
       locales: [
         { code: "en", iso: "en-US", name: "English" },
         { code: "zh", iso: "zh-CN", name: "中文" }
       ],
-      defaultLocale: "en",
-      routes: {
-        // about: {
-        //   zh: "/a-propos",
-        //   en: "/about-us"
-        // },
-        // posts: {
-        //   zh: "/articles"
-        // }
-      },
-      vueI18n: {
-        fallbackLocale: "en",
-        messages: {
-          en: {},
-          zh: {}
-        }
-      }
+      defaultLocale: "en"
+      // routes: {
+      //   // about: {
+      //   //   zh: "/a-propos",
+      //   //   en: "/about-us"
+      //   // },
+      //   // posts: {
+      //   //   zh: "/articles"
+      //   // }
+      // },
+      // vueI18n: {
+      //   fallbackLocale: "en",
+      //   messages: {
+      //     en: {},
+      //     zh: {}
+      //   }
+      // }
     }]
   ],
   plugins: [
     "~/plugins/filter.js",
     "~/plugins/mixins.js",
+    { src: "~plugins/quill.js", ssr: false },
     "~/plugins/vuetify.js"
   ],
   render: {
