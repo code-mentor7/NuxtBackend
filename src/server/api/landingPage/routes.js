@@ -3,11 +3,13 @@ import jwt from "express-jwt"
 import multer from "multer"
 
 import controllers from "./controllers"
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "tmp/uploads/")
   }
 })
+const router = Router()
 
 let upload = multer({ storage }).fields([
   { name: "main_carousel#0", maxCount: 1 },
@@ -28,7 +30,6 @@ let upload = multer({ storage }).fields([
   { name: "hotel_destination_2#5", maxCount: 1 }
 ])
 
-const router = Router()
 router.use(jwt({ secret: process.env.SECRET }))
 
 router.get("/", controllers.getAll)

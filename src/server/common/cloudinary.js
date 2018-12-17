@@ -11,7 +11,7 @@ export const cloudinaryRemoveSingleFileWithPublicId = (publicId, fileType = "ima
   })
 }
 
-export const cloudinaryUploadSingleFileWithBuffer = (file) => {
+export const cloudinaryUploadSingleFile = (file) => {
   // if (file.constructor !== Object) throw new Error("File must be Object type")
   if (getType(file) !== "Object") throw new Error("File must be Object type")
   // https://github.com/expressjs/multer/issues/398

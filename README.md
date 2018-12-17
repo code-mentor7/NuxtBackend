@@ -9,7 +9,6 @@ test time with gettype check
 to save locale lang
 to check change theme no effect
 products add merchant id
-to add multer on products
 product manager see own products
 quill change lang freeze
 

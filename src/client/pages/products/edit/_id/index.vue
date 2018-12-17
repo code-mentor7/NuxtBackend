@@ -261,13 +261,40 @@ export default {
     async save () {
       this.submitted = false
       let prodAttr = this.localProd
+      const imageVariableNameArr = [
+        "other_image_ids",
+        "primary_image_id",
+        "travel_insurance_file_id"
+      ]
 
       try {
         if (this.lang !== "en") {
           prodAttr = this.setTranslationToArr()
         }
+        else {
+          delete prodAttr.translation
+        }
         console.log("### ", prodAttr)
-        // await this.$axios.$put(`/api/products/edit/${this.$route.params.id}`, prodAttr)
+        let formData = new FormData()
+        // TODO: refactor
+        for (let name of imageVariableNameArr) {
+          if (Array.isArray(prodAttr[name])) {
+            prodAttr[name].forEach((value) => {
+              if (this.$helpers.getType(value.image_file) === "FileList") {
+                formData.append(name, value.image_file[0])
+              }
+            })
+          }
+          else {
+            if (this.$helpers.getType(prodAttr[name]) === "FileList") {
+              formData.append(name, prodAttr[name][0])
+            }
+          }
+        }
+
+        formData.append("jsonObj", JSON.stringify(prodAttr))
+        // TODO: refetch  / replace doc with new doc
+        await this.$axios.$put(`/api/products/edit/${this.$route.params.id}`, formData)
         this.submitted = true
         this.$store.dispatch("setupSnackbar", {
           show: true,
@@ -276,6 +303,7 @@ export default {
         })
       }
       catch (err) {
+        console.log("### ", err)
         this.submitted = true
         this.$store.dispatch("setupSnackbar", {
           show: true,

@@ -929,15 +929,15 @@ export default {
       travel_insurance_file_name: null,
       primary_image_filename: "",
       addOnDatePicker: false,
-      expandBasicD: [true],
-      expandInventory: [true],
-      expandItinerary: [true],
-      expandImages: [true],
-      expandFees: [true],
-      expandPurchaseDiscount: [true],
-      expandTourGuide: [true],
-      expandTravelInsurance: [true],
-      expandTnC: [true],
+      expandBasicD: [false],
+      expandInventory: [false],
+      expandItinerary: [false],
+      expandImages: [false],
+      expandFees: [false],
+      expandPurchaseDiscount: [false],
+      expandTourGuide: [false],
+      expandTravelInsurance: [false],
+      expandTnC: [false],
       localSubmitted: false,
       validationProps: {
         name: { required },
@@ -1092,6 +1092,17 @@ export default {
     //     }
     //   }
     // }
+  },
+  mounted () {
+    this.expandBasicD = [true]
+    this.expandInventory = [true]
+    this.expandItinerary = [true]
+    this.expandImages = [true]
+    this.expandFees = [true]
+    this.expandPurchaseDiscount = [true]
+    this.expandTourGuide = [true]
+    this.expandTravelInsurance = [true]
+    this.expandTnC = [true]
   },
   methods: {
     submit () {

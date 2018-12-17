@@ -61,7 +61,7 @@ export const controllers = {
   },
 
   updateOneById (model, findQuery, updateQuery) {
-    return model.updateOne(findQuery, updateQuery)
+    return model.updateOne(findQuery, updateQuery, { new: true })
   }
 }
 
