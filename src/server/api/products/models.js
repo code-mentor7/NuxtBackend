@@ -5,241 +5,205 @@ mongoose.plugin(slug)
 const Schema = mongoose.Schema
 
 const productSchema = new mongoose.Schema({
-  "name": {
+  name: {
     type: String,
     index: 1
   },
-  "slug": { type: String, slug: ["name"], forceIdSlug: true, unique: true },
-  "sku": {
+  slug: { type: String, slug: ["name"], forceIdSlug: true, unique: true },
+  sku: {
     type: String,
     index: 1
   },
-  "cost": {
+  cost: {
     type: Number,
     optional: true
   },
-  "adult_selling_price": {
+  adult_selling_price: {
     type: Number,
     index: 1
   },
-  "kid_selling_price": {
+  kid_selling_price: {
     type: Number,
     index: 1
   },
-  "adult_promotion_price": {
+  adult_promotion_price: {
     type: Number,
     index: 1,
     optional: true
   },
-  "kid_promotion_price": {
+  kid_promotion_price: {
     type: Number,
     index: 1,
     optional: true
   },
-  "promotion_amount": {
+  promotion_amount: {
     type: Number,
     optional: true
   },
-  "promotion_type": {
+  promotion_type: {
     type: String,
     optional: true
   },
-  "total_reviews": {
+  total_reviews: {
     type: Number,
     optional: true,
-    defaultValue: 0
+    default: 0
   },
-  "total_ratings": {
+  total_ratings: {
     type: Number,
-    defaultValue: 0,
+    default: 0,
     optional: true
   },
-  "inventory": {
+  inventory: {
     type: Number,
-    defaultValue: 0,
+    default: 0,
     optional: true,
     index: 1
   },
-  "description": {
+  description: {
     type: String,
     optional: true,
-    defaultValue: ""
+    default: ""
   },
-  "primary_image_id": {
+  primary_image_id: {
     type: String,
     optional: true
   },
-  "cover_image_id": {
+  cover_image_id: {
     type: String,
     optional: true
   },
-  "other_image_ids": {
-    type: Array,
-    defaultValue: [],
-    optional: true
+  other_image_ids: {
+    type: Array
   },
-  "other_image_ids.$": {
-    type: Object,
-    optional: true,
-    blackbox: true
-  },
-  "address_line_1": { type: String, optional: true },
-  "address_line_2": { type: String, optional: true },
-  "state": { type: String, optional: true },
-  "city": { type: String, optional: true },
-  "zip_code": { type: String, optional: true },
-  "country": { type: String, optional: true },
-  "category": {
+  address_line_1: { type: String, optional: true },
+  address_line_2: { type: String, optional: true },
+  state: { type: String, optional: true },
+  city: { type: String, optional: true },
+  zip_code: { type: String, optional: true },
+  country: { type: String, optional: true },
+  category: {
     type: String,
     optional: true
   },
-  "location_to_be_display": {
+  location_to_be_display: {
     type: String,
     optional: true
   },
-  "highlights": {
+  highlights: {
     type: String,
     optional: true,
-    defaultValue: ""
+    default: ""
   },
-  "includes": {
+  includes: {
     type: String,
     optional: true,
-    defaultValue: ""
+    default: ""
   },
-  "duration": {
+  duration: {
     type: String,
     optional: true
   },
-  "start_date": {
+  start_date: {
     type: Date,
     optional: true
   },
-  "end_date": {
+  end_date: {
     type: Date,
     optional: true
   },
-  "merchant_id": { type: Schema.Types.ObjectId, ref: "Merchant" },
+  merchant_id: { type: Schema.Types.ObjectId, ref: "Merchant" },
   // "merchant_id": { type: String },
-  "merchant_name": { type: String, optional: true },
-  "itinerary": {
+  merchant_name: { type: String, optional: true },
+  itinerary: {
     type: Array,
-    defaultValue: [],
+    default: [],
     optional: true
-  },
-  "itinerary.$": {
-    type: Object,
-    optional: true,
-    blackbox: true
   },
   // title
   //
-  "disabled": {
+  disabled: {
     type: Boolean,
     optional: true,
     label: "Disabled",
-    defaultValue: false
+    default: false
   },
-  "notes": {
+  notes: {
     type: String,
     optional: true
   },
-  "min_pax": {
+  min_pax: {
     type: Number,
     optional: true,
-    defaultValue: 0
+    default: 0
   },
-  "max_pax": {
+  max_pax: {
     type: Number,
     optional: true
   },
-  "handling_fee": {
+  handling_fee: {
     type: Number,
     optional: true
   },
-  "adult_purchase_discount": {
+  adult_purchase_discount: {
     type: Array,
-    defaultValue: [],
+    default: [],
     optional: true
   },
-  "adult_purchase_discount.$": {
-    type: Object,
-    optional: true,
-    blackbox: true
-  },
-  "child_purchase_discount": {
+  child_purchase_discount: {
     type: Array,
-    defaultValue: [],
+    default: [],
     optional: true
   },
-  "child_purchase_discount.$": {
-    type: Object,
-    optional: true,
-    blackbox: true
-  },
-  "tour_guide": {
+  tour_guide: {
     type: Array,
-    defaultValue: [],
+    default: [],
     optional: true
   },
-  "tour_guide.$": {
-    type: Object,
-    optional: true,
-    blackbox: true
-  },
-  "adult_travel_insurance_fee": {
+  adult_travel_insurance_fee: {
     type: Number,
     optional: true,
-    defaultValue: 0
+    default: 0
   },
-  "child_travel_insurance_fee": {
+  child_travel_insurance_fee: {
     type: Number,
     optional: true,
-    defaultValue: 0
+    default: 0
   },
-  "travel_insurance_file_id": {
+  travel_insurance_file_id: {
     type: String,
     optional: true
   },
-  "travel_insurance_fee": {
+  travel_insurance_fee: {
     type: Number,
     optional: true,
-    defaultValue: 0
+    default: 0
   },
-  "terms_and_conditions": {
+  terms_and_conditions: {
     type: String,
     optional: true,
-    defaultValue: ""
+    default: ""
   },
-  "tour_addons_expiration_date": {
+  tour_addons_expiration_date: {
     type: Date,
     optional: true
   },
-  "lang": {
+  lang: {
     type: String,
     autoValue: function () {
       return "english"
     }
   },
-  "translation": {
+  translation: {
     type: Array,
-    defaultValue: [],
+    default: [],
     optional: true
   },
-  "translation.$": {
-    type: Object,
-    blackbox: true,
-    optional: true
-  },
-  "translation.$.name": {
+  created_by: {
     type: String,
     optional: true
   },
-  "created_by": {
-    type: String,
-    optional: true
-  },
-  "updated_by": {
+  updated_by: {
     type: String,
     optional: true
   }
@@ -247,8 +211,8 @@ const productSchema = new mongoose.Schema({
   timestamps: {
     createdAt: "created_at",
     updatedAt: "updated_at"
-  }
-
+  },
+  versionKey: false
 })
 
 productSchema.index({

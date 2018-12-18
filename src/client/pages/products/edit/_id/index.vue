@@ -291,7 +291,6 @@ export default {
             }
           }
         }
-
         formData.append("jsonObj", JSON.stringify(prodAttr))
         // TODO: refetch  / replace doc with new doc
         await this.$axios.$put(`/api/products/edit/${this.$route.params.id}`, formData)

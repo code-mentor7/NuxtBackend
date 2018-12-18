@@ -13,8 +13,6 @@ const updateOneById = async (req, res, next) => {
     let parsedJsonObj = JSON.parse(req.body.jsonObj)
     let allowedSchema = _.pick(parsedJsonObj, COMMON.getSchemaKeys(Products, ["_id", "id", "created_at", "updated_at", "slug"]))
 
-    console.log("### allowedSchema", allowedSchema)
-    // console.log("### files", req.files)
     if (req.files) {
       let promiseArr = []
       // TODO: refactor
@@ -23,10 +21,8 @@ const updateOneById = async (req, res, next) => {
           if (file.mimetype.indexOf("image") !== -1 || file.mimetype.indexOf("pdf") !== -1) {
             promiseArr.push(new Promise(async (resolve) => {
               const cloudinaryImgObj = await cloudinaryUploadSingleFile(file)
-              console.log("### waitinggggg")
               resolve()
-              console.log("### resolve", cloudinaryImgObj)
-              if (Array.isArray(allowedSchema[file])) {
+              if (Array.isArray(allowedSchema[filesKey])) {
                 allowedSchema[filesKey].push({
                   image_id: cloudinaryImgObj.public_id,
                   image_filename: file.originalname
@@ -49,6 +45,13 @@ const updateOneById = async (req, res, next) => {
           .catch()
       })
     }
+
+    allowedSchema.other_image_ids = allowedSchema.other_image_ids.filter((value, index) => {
+      return !value.isNew
+    })
+    // TODO: array need push
+
+    console.log("### allowedSchema", allowedSchema)
     const findQuery = { _id: req.params.id }
     const updateQuery = { $set: { ...allowedSchema } }
     await Products.updateOne(findQuery, updateQuery, { new: true })
