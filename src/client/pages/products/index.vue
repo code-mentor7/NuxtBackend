@@ -208,9 +208,10 @@ export default {
         query: app.$helpers.setSearchQuery()
       })
       const promiseResultArray = await apiCallController.getAllAndCount()
+      let [products, productsCount] = promiseResultArray
       return {
-        products: promiseResultArray[0],
-        productsCount: promiseResultArray[1]
+        products,
+        productsCount
       }
       // app.store.dispatch("products/setProducts", promiseResultArray[0])
       // app.store.dispatch("products/setProductsCount", promiseResultArray[1])
