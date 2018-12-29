@@ -406,7 +406,7 @@
               <div
                 slot="header"
                 class="primary--text font-weight-bold">{{ $t('itinerary') | capitalize }}</div>
-                <!-- <v-tabs
+              <v-tabs
                 color="cyan"
                 show-arrows
               >
@@ -476,7 +476,7 @@
                     </v-card>
                   </v-tab-item>
                 </v-tabs-items>
-              </v-tabs> -->
+              </v-tabs>
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-flex>
