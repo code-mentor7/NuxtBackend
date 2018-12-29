@@ -27,12 +27,9 @@ export default {
   },
   computed: {
     ...mapState({
-      user: state => state.auth.user
-    }),
-    isDarkTheme () {
-      if (this.user) return this.user.dark_theme
-      return true
-    }
+      user: state => state.auth.user,
+      isDarkTheme: state => state.isDarkTheme
+    })
   },
   mounted () {
     this.$root.$confirm = this.$refs.confirm.open

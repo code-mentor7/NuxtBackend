@@ -20,20 +20,20 @@ const productSchema = new mongoose.Schema({
   },
   adult_selling_price: {
     type: Number,
-    index: 1
+    index: -1
   },
   kid_selling_price: {
     type: Number,
-    index: 1
+    index: -1
   },
   adult_promotion_price: {
     type: Number,
-    index: 1,
+    index: -1,
     optional: true
   },
   kid_promotion_price: {
     type: Number,
-    index: 1,
+    index: -1,
     optional: true
   },
   promotion_amount: {
@@ -58,7 +58,7 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0,
     optional: true,
-    index: 1
+    index: -1
   },
   description: {
     type: String,
@@ -230,6 +230,10 @@ productSchema.index({
 productSchema.pre("save", function (next) {
   // this._id = this._id.toString()
   next()
+})
+
+productSchema.pre("findOne", function () {
+  this.populate({ path: "merchant_id", model: Merchants })
 })
 
 productSchema.pre("find", function () {

@@ -129,7 +129,7 @@
             <v-list>
               <v-list-tile
                 v-for="(item, i) in langList"
-                v-if="item.value != lang.value"
+                v-if="item.value != localeLang"
                 :key="i"
                 :to="switchLocalePath(item.value)"
                 @click="onChangeLang(item.value)"
@@ -183,7 +183,7 @@
 
 <script>
 // import { Meteor } from "meteor/meteor"
-import { mapState } from "vuex"
+import { mapActions, mapState } from "vuex"
 // import { Roles } from "meteor/alanning:roles"
 import ChangePasswordDialog from "~/components/Dialog/ChangePasswordDialog.vue"
 import AddUserDialog from "~/components/Dialog/AddUserDialog.vue"
@@ -198,7 +198,7 @@ export default {
     return {
       firstLoad: true,
       isClick: false,
-      lang: { value: "en", code: "English" },
+      // lang: { value: "en", code: "English" },
       langList: [
         { id: 0, value: "en", name: "English", code: "us" },
         { id: 1, value: "zh", name: "中文", code: "cn" }
@@ -212,14 +212,16 @@ export default {
   },
   computed: {
     ...mapState({
-      user: state => state.auth.user
+      user: state => state.auth.user,
+      isDarkTheme: state => state.isDarkTheme,
+      localeLang: state => state.localeLang
     }),
     isDark: {
       get () {
-        if (this.user) return this.user.dark_theme
-        return true
+        return this.isDarkTheme
       },
       set (val) {
+        this.setIsDarkTheme(val)
         this.debouncedAction()
       }
     },
@@ -270,6 +272,10 @@ export default {
     }
   },
   methods: {
+    ...mapActions([
+      "setIsDarkTheme",
+      "setLocaleLang"
+    ]),
     addUserClick () {
       this.menu = false
       this.showAddUser = true
@@ -305,30 +311,34 @@ export default {
     },
     onChangeLang (langValue) {
       this.setLang(langValue)
-      // Meteor.call("updateUser", Meteor.userId(), { localeLang: this.lang.value })
+      this.debouncedAction()
     },
+    // onChangeTheme (theme) {
+    //   this.setIsDarkTheme(theme)
+    // },
     products () {
       return this.$router.push({ name: "products" })
     },
     setLang (langValue) {
-      this.lang = {
-        value: langValue,
-        code: this.$helpers.getLocaleLangCode(langValue)
-      }
+      // this.lang = {
+      //   value: langValue,
+      //   code: this.$helpers.getLocaleLangCode(langValue)
+      // }
       // this.setLocaleLang(this.lang);
-      this.$store.commit("i18n/I18N_SET_LOCALE", this.lang.value)
-      this.$i18n.locale = this.lang.value
+      this.setLocaleLang(langValue)
+      this.$store.commit("i18n/I18N_SET_LOCALE", langValue)
+      // this.$i18n.locale = this.langValue
     },
     sideNav () {
       this.isClick = true
       this.sideBarState = !this.sideBarState
     },
     async updateUser () {
-      console.log("updateTheme")
       await this.$axios.$put(`/api/users/${this.user._id}`, {
-        dark_theme: !this.user.dark_theme,
-        localeLang: this.lang.value
+        dark_theme: this.isDarkTheme,
+        localeLang: this.localeLang
       })
+      this.$auth.fetchUser()
 
       // Meteor.call("updateUser", Meteor.userId(), { dark_theme: this.isDarkTheme })
     }

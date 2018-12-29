@@ -21,7 +21,7 @@ router.use(jwt({ secret: process.env.SECRET }))
 
 router.route("/")
   .get(controllers.getAll)
-  .post(controllers.createOne)
+  .post(upload, controllers.createOne)
 
 router.route("/edit/:id")
   .get(controllers.findById)

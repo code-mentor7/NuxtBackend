@@ -15,7 +15,7 @@ const merchantUsersSchema = new mongoose.Schema({
   },
   merchant_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "merchants"
+    ref: "Merchant"
   },
   email: {
     type: String,

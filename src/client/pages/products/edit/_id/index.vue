@@ -159,7 +159,7 @@ export default {
     // this.lang = this.$i18n.locale
   },
   mounted () {
-    console.log("### mounted", this.product)
+    console.log("### this.product", this.product)
     this.localProd = { ...this.product }
 
     // if (this.lang === "en") {
@@ -271,10 +271,6 @@ export default {
         if (this.lang !== "en") {
           prodAttr = this.setTranslationToArr()
         }
-        else {
-          delete prodAttr.translation
-        }
-        console.log("### ", prodAttr)
         let formData = new FormData()
         // TODO: refactor
         for (let name of imageVariableNameArr) {
@@ -292,8 +288,8 @@ export default {
           }
         }
         formData.append("jsonObj", JSON.stringify(prodAttr))
-        // TODO: refetch  / replace doc with new doc
-        await this.$axios.$put(`/api/products/edit/${this.$route.params.id}`, formData)
+        this.product = await this.$axios.$put(`/api/products/edit/${this.$route.params.id}`, formData)
+        this.setProductDataByLocale()
         this.submitted = true
         this.$store.dispatch("setupSnackbar", {
           show: true,

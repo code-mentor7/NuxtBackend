@@ -37,7 +37,7 @@
                 label="New Password"
                 name="newPass"
                 type="password"
-                @input="$v.newPass.$touch()"
+                @input="$v.newPass.$touch(); $v.confirmNewPass.$touch()"
               />
               <v-text-field
                 v-model.trim="confirmNewPass"
@@ -69,7 +69,7 @@
 
 <script>
 import { validationMixin } from "vuelidate"
-import { required } from "vuelidate/lib/validators"
+import { required, sameAs, minLength } from "vuelidate/lib/validators"
 // import { Accounts } from "meteor/accounts-base"
 import { mapActions } from "vuex"
 export default {
@@ -87,8 +87,14 @@ export default {
       confirmNewPass: "",
       validationProps: {
         currentPass: { required },
-        newPass: { required },
-        confirmNewPass: { required }
+        newPass: {
+          required,
+          minLength: minLength(6)
+        },
+        confirmNewPass: {
+          required,
+          sameAsPassword: sameAs("newPass")
+        }
       },
       isLoading: false
     }
@@ -117,10 +123,35 @@ export default {
       this.confirmNewPass = ""
       this.$v.$reset()
     },
-    save () {
+    async save () {
       this.$v.$touch()
       if (!this.$v.$invalid) {
         this.isLoading = true
+        const postData = {
+          password: this.newPass,
+          currentPassword: this.currentPass
+        }
+        try {
+          await this.$axios.$post(`/api/auth/change-password`, postData)
+          this.isLoading = false
+          this.$store.dispatch("setupSnackbar", {
+            show: true,
+            text: "Password updated.",
+            type: "success"
+          })
+        }
+        catch (err) {
+          this.isLoading = false
+          let msg = "We are unable to update your password at the moment."
+          if (err.response.status === 403) {
+            msg = "Please ensure your current password is correct."
+          }
+          this.$store.dispatch("setupSnackbar", {
+            show: true,
+            text: msg,
+            type: "error"
+          })
+        }
         // TODO: ensure user is in group backend
         // TODO: ensure user email exist
         // Accounts.changePassword(this.currentPass, this.newPass, (err, res) => {
@@ -146,6 +177,13 @@ export default {
         //     type: type
         //   })
         // })
+      }
+      else {
+        this.$store.dispatch("setupSnackbar", {
+          show: true,
+          text: "Please fill in required field.",
+          type: "warning"
+        })
       }
     }
   },

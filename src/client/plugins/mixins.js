@@ -119,6 +119,16 @@ const mixins = {
   isNumeric (n) {
     return !isNaN(parseFloat(n)) && isFinite(n)
   },
+  async recursiveArrayLoop (arr, funcToExecute) {
+    for (let index = 0; index < arr.length; index++) {
+      if (Array.isArray(arr[index])) {
+        this.recursiveArrayLoop(arr[index])
+      }
+      else {
+        await funcToExecute(arr[index], index)
+      }
+    }
+  },
   removeEmptyObjectVariable (obj) {
     Object.keys(obj).forEach(key => {
       if (!obj[key]) {

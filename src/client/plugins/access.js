@@ -1,5 +1,4 @@
 export default function ({ app }) {
-  console.log("### yoyoyoyoy")
   if (!app.$auth.loggedIn) {
     return
   }

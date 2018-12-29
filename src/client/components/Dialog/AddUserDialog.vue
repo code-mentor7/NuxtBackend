@@ -172,7 +172,7 @@ export default {
         mobile_number: {},
         password: {
           required,
-          minLength: minLength(5)
+          minLength: minLength(6)
         },
         roles: { required }
       }
@@ -245,6 +245,7 @@ export default {
         this.$axios.$post("/api/auth/signup", attr)
           .then((response) => {
             this.submitted = false
+            this.isShow = false
             // this.$nuxt.$router.push("/")
             this.$store.dispatch("setupSnackbar", {
               show: true,

@@ -46,11 +46,34 @@ export default {
   },
   methods: {
     async save () {
-      console.log("this.productFormData", this.product)
+      const imageVariableNameArr = [
+        "other_image_ids",
+        "primary_image_id",
+        "travel_insurance_file_id"
+      ]
+      let prodAttr = this.product
       // this.product.merchant_id = this.merchantData._id
       try {
         this.submitted = false
-        await this.$axios.$post(`/api/products`, this.product)
+        let formData = new FormData()
+        for (let name of imageVariableNameArr) {
+          if (Array.isArray(prodAttr[name])) {
+            prodAttr[name].forEach((value) => {
+              if (this.$helpers.getType(value.image_file) === "FileList") {
+                formData.append(name, value.image_file[0])
+              }
+            })
+          }
+          else {
+            if (this.$helpers.getType(prodAttr[name]) === "FileList") {
+              formData.append(name, prodAttr[name][0])
+            }
+          }
+        }
+        formData.append("jsonObj", JSON.stringify(prodAttr))
+
+        const createdProduct = await this.$axios.$post(`/api/products`, formData)
+        this.$router.push({ name: `products-edit-id___${this.$i18n.locale}`, params: { id: createdProduct._id } })
         this.submitted = true
         this.$store.dispatch("setupSnackbar", {
           show: true,

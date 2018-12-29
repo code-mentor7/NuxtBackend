@@ -112,14 +112,22 @@ export default {
             password: this.password
           }
         })
-          .then(() => {
+          .then(async () => {
             this.submitted = false
-            this.$nuxt.$router.push("/")
             this.$store.dispatch("setupSnackbar", {
               show: true,
               text: "Welcome Back !",
               type: "success"
             })
+            if (this.$auth.user) {
+              await this.$store.commit("SET_IS_DARK_THEME", this.$auth.user.dark_theme)
+              await this.$store.commit("SET_LOCALE_LANG", this.$auth.user.localeLang)
+              await this.$store.commit("i18n/I18N_SET_LOCALE", this.$auth.user.localeLang)
+              if (this.$auth.user.localeLang !== "en") {
+                return this.$nuxt.$router.push(this.localePath("index", "zh"))
+              }
+            }
+            this.$nuxt.$router.push("/")
           })
           .catch((err) => {
             this.submitted = false

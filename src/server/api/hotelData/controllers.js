@@ -31,7 +31,6 @@ const bulkUpload = async (req, res) => {
     escapeChar: "\"",
     skipEmptyLines: true,
     transformHeader: (h) => {
-      console.log("### header", h)
       return h
     },
     chunk: (results, parser) => {
@@ -49,7 +48,7 @@ const bulkUpload = async (req, res) => {
       // }, Math.random() * 10000)
       results.data.forEach((data) => {
         // bulkOp.find({ hotel_name: data.hotel_name }).upsert().updateOne(data)
-        Hotels.findOneAndUpdate({ hotel_name: data.hotel_name }, data, { upsert: true })
+        Hotels.findOneAndUpdate({ hotel_name: data.hotel_name }, data, { upsert: true }, function () {})
         // counter++
         // if (counter % 500 === 0) {
         //   console.time("Time this")

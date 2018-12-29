@@ -27,6 +27,33 @@ export const check = {
   }
 }
 
+export const changePass = {
+  async post (req, res) {
+    try {
+      const { password, currentPassword } = req.body
+      const { email } = req.user
+      let user = await MerchantUsers.findOne({ email })
+      if (!user) throw new ServerError("User not found.", { status: 401, log: false })
+      let passwordHash = user.password
+      let matched = await bcrypt.compare(currentPassword, passwordHash)
+      if (!user || !matched || !email || !password) {
+        throw new ServerError("Change password failed.", { status: 403, log: false })
+      }
+      else {
+        if (user.account_verified !== true) {
+          throw new ServerError("Account not verified.", { status: 403, log: false })
+        }
+        const hashedPassword = await bcrypt.hash(password, 10)
+        await MerchantUsers.updateOne({ _id: user._id }, { password: hashedPassword })
+        res.send("done")
+      }
+    }
+    catch (err) {
+      res.handleServerError(err)
+    }
+  }
+}
+
 export const forgotPass = {
   async post (req, res) {
     try {
@@ -106,6 +133,7 @@ export const login = {
 
 export const logout = {
   async post (req, res) {
+    req.user = {}
     res.json({ status: "OK" })
   }
 }
@@ -178,6 +206,8 @@ export const signup = {
       const allowedSchema = _pick(req.body, COMMON.getSchemaKeys(MerchantUsers))
       // TODO: remove hardcoded merchant id
       allowedSchema.merchant_id = "5a886f9a356447c1eccb4344"
+      allowedSchema.account_verified = true // TODO: remove this when b2b
+      if (!allowedSchema.merchant_id) throw new ServerError("Merchant not found.", { status: 403 })
       let signature = {
         contact_number: allowedSchema.contact_number,
         email: allowedSchema.email,
@@ -194,8 +224,10 @@ export const signup = {
       // TODO: right now meteor relying on user id unique, need to change index to email
       // let newCustomer = new Customer(allowedSchema)
       // await newCustomer.save()
-      const userRole = await MerchantRoles.findOne({ name: "admin" })
-      allowedSchema.roles = [userRole._id]
+      if (!allowedSchema.roles) {
+        const userRole = await MerchantRoles.findOne({ name: "admin" })
+        allowedSchema.roles = [userRole._id]
+      }
       await MerchantUsers.create(allowedSchema)
       const verificationLink = `${req.protocol}://${req.get("host")}/verify?i=${allowedSchema.verification_token}`
       const emailHTML = COMMON.generateEmailHTMLButtonTemplate(

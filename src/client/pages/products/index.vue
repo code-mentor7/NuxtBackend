@@ -202,10 +202,16 @@ import _ from "lodash"
 export default {
   async asyncData ({ app, store, redirect, route }) {
     try {
+      let filter = {
+        merchant_id: app.$auth.user.merchant_id
+      }
+      if (!app.$helpers.userIsAdmin(app.$auth.user)) {
+        filter.created_by = app.$auth.user._id
+      }
       const apiCallController = app.$helpers.generateAPICallController({
         apiEndpoint: "/api/products",
         axios: app.$axios,
-        query: app.$helpers.setSearchQuery()
+        query: app.$helpers.setSearchQuery(filter)
       })
       const promiseResultArray = await apiCallController.getAllAndCount()
       let [products, productsCount] = promiseResultArray
@@ -312,6 +318,10 @@ export default {
     this.debouncedTableInteration = _.debounce(this.getDataFromApi, 500)
   },
   mounted () {
+    this.selector.merchant_id = this.$auth.user.merchant_id
+    if (!this.$helpers.userIsAdmin(this.$auth.user)) {
+      this.selector.created_by = this.$auth.user._id
+    }
     // this.query = { merchant_id: this.merchantData._id }
     // console.log("this.userIsAdmin", this.userIsAdmin)
     // this.selector = { merchant_id: this.merchantData._id }

@@ -174,7 +174,7 @@ export default {
         let props = {
           title: this.title,
           content_title: this.content_title,
-          content: $("#js-editor-itinerary").trumbowyg("html"),
+          content: this.content,
           notes: this.notes
         }
         this.$emit(this.type, props, this.index)

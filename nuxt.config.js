@@ -103,7 +103,8 @@ module.exports = {
         { code: "en", iso: "en-US", name: "English" },
         { code: "zh", iso: "zh-CN", name: "中文" }
       ],
-      defaultLocale: "en"
+      defaultLocale: null,
+      strategy: "prefix_and_default"
       // routes: {
       //   // about: {
       //   //   zh: "/a-propos",
@@ -139,7 +140,7 @@ module.exports = {
     }
   },
   router: {
-    middleware: ["auth"]
+    middleware: ["auth", "locale-redirect"]
   },
   srcDir: path.resolve(__dirname, "src", "client")
 }

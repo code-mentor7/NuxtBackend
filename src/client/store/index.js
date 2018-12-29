@@ -47,18 +47,33 @@ export const mutations = {
   }
 }
 export const actions = {
-  async nuxtServerInit ({ commit }, { app }) {
-    // const ip = await app.$axios.$get('http://icanhazip.com')
-    // commit('SET_IP', ip)
-    // let promiseArr = [
-    //   app.$axios.$get("/api/landing-page"),
-    //   app.$axios.$get("/api/site-identity")
-    // ]
-    // await Promise.all(promiseArr)
-    //   .then(async (promiseResultArray) => {
-    //     await commit("api/SET_LANDING_PAGE", promiseResultArray[0][0])
-    //     await commit("api/SET_SITE_IDENTITY", promiseResultArray[1][0])
-    //   })
+  async nuxtServerInit ({ commit }, { app, redirect, route, params, i18n }) {
+    if (app.$auth.user) {
+      await commit("SET_IS_DARK_THEME", app.$auth.user.dark_theme)
+      await commit("SET_LOCALE_LANG", app.$auth.user.localeLang)
+      await commit("i18n/I18N_SET_LOCALE", app.$auth.user.localeLang)
+    }
+    // let app = qweasd.app
+    // let redirect = qweasd.redirect
+
+    // if (app.$auth.user) {
+    //   // if (route.fullPath.indexOf("en") === -1) return redirect("301", `/en${route.fullPath}`)
+    //   console.log("### ", route.fullPath.indexOf(app.$auth.user.localeLang))
+    //   if (route.fullPath.indexOf(app.$auth.user.localeLang) === -1) {
+    //     return redirect("301", `/${app.$auth.user.localeLang}${route.path}`)
+    //   }
+    //   // if (app.$auth.user.localeLang)
+    //   if (app.$auth.user.localeLang !== "en") {
+    //     // redirect(app.switchLocalePath("zh"), { params })
+    //     // redirect(app.locale("zh", { params }))
+    //   }
+    //   await commit("SET_IS_DARK_THEME", app.$auth.user.dark_theme)
+    //   await commit("SET_LOCALE_LANG", app.$auth.user.localeLang)
+    //   await commit("i18n/I18N_SET_LOCALE", app.$auth.user.localeLang)
+    // }
+    // else {
+    //   if (route.fullPath.indexOf("en") === -1) return redirect("301", `/en${route.fullPath}`)
+    // }
   },
   showSideBar ({ commit }, value) {
     commit("SHOW_SIDE_BAR", value)

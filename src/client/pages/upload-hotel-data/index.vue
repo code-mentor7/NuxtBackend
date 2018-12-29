@@ -59,7 +59,7 @@
                   </v-list-tile>
                 </v-list>
               </v-flex>
-              <v-flex v-if="uploading">
+              <!-- <v-flex v-if="uploading">
                 <v-progress-linear
                   v-model="uploadProgress"
                   :buffer-value="bufferValue"
@@ -70,7 +70,7 @@
                 <v-chip
                   color="red"
                   text-color="white">{{ uploadProgress }}%</v-chip>
-              </v-flex>
+              </v-flex> -->
             </v-layout>
           </v-container>
           <v-card-actions>
@@ -87,8 +87,6 @@
 </template>
 
 <script>
-// import { mapActions, mapGetters } from "vuex"
-import Papa from "papaparse"
 export default {
   data () {
     return {
@@ -122,19 +120,19 @@ export default {
       }
     },
     async upload () {
-      let message = "Upload Successful."
-      let type = "success"
       // this.loading = true;
       if (this.hotel_file && this.hotel_file.length > 0 && this.hotel_file[0] instanceof File) {
-        this.uploading = true
-        this.uploadProgress = 0
-        let size = this.hotel_file[0].size
-        let percent = 0
-        let datas = []
-        this.uploadProgress = 0
+        this.loading = true
         let formData = new FormData()
         formData.append("hotel_file", this.hotel_file[0])
         await this.$axios.$post(`/api/hotelData/upload`, formData)
+        this.loading = false
+        this.hotel_file = null
+        this.$store.dispatch("setupSnackbar", {
+          show: true,
+          text: "Upload Successful.",
+          type: "success"
+        })
         // Papa.LocalChunkSize = 3000000 // kb
         // Papa.parse(this.hotel_file[0], {
         //   header: true,
@@ -186,12 +184,10 @@ export default {
       }
       else {
         this.loading = false
-        message = "No file chosen."
-        type = "warning"
-        this.setupSnackbar({
+        this.$store.dispatch("setupSnackbar", {
           show: true,
-          text: message,
-          type: type
+          text: "No file chosen.",
+          type: "warning"
         })
       }
     }
