@@ -103,8 +103,8 @@ module.exports = {
         { code: "en", iso: "en-US", name: "English" },
         { code: "zh", iso: "zh-CN", name: "中文" }
       ],
-      defaultLocale: null,
-      strategy: "prefix_and_default"
+      defaultLocale: "en"
+      // strategy: "prefix_and_default"
       // routes: {
       //   // about: {
       //   //   zh: "/a-propos",
