@@ -20,4 +20,4 @@
 - [x] to save locale lang
 - [x] routes middleware block access
 - [x] Roles another table ?
-- [x] user and product merchant id populate
+- [x] user and product merchant id populate"# NuxtBackend" 
